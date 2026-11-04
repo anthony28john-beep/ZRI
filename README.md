@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ZeroRiskInitiative
 
 ZeroRiskInitiative is a school capstone project that connects a Unity safety education game with a Laravel web portal. Students can view their game results, teachers can monitor their classes, and administrators can manage accounts, blocks, and teacher assignments.
@@ -192,3 +193,7 @@ Ensure storage and cache directories have the required permissions and remove th
 - [Firebase Admin SDK for PHP](https://firebase-php.readthedocs.io/)
 - [Firestore REST API](https://firebase.google.com/docs/firestore/use-rest-api)
 
+=======
+# ZRI
+ZeroRiskInitiative
+>>>>>>> e9123aac9def85940125a85e716d669e7a95d5dc
