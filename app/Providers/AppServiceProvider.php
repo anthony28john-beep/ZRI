@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Exceptions\AccountException;
+use App\Services\FirebaseServiceAccount;
 use App\Services\FirestoreCredentials;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -23,15 +24,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(FirestoreCredentials::class);
         $this->app->singleton(Factory::class, function () {
             try {
-                $path = config('firebase.credentials');
-                if (! is_string($path) || $path === '' || ! config('firebase.database_url')) {
+                if (! config('firebase.database_url')) {
                     throw new AccountException('The account service is not configured. Contact an administrator.', status: 503);
                 }
-                if (! preg_match('~^(?:[A-Za-z]:[\\\\/]|/)~', $path)) {
-                    $path = base_path($path);
-                }
 
-                return (new Factory)->withServiceAccount($path)
+                return (new Factory)->withServiceAccount($this->app->make(FirebaseServiceAccount::class)->source())
                     ->withDatabaseUri(config('firebase.database_url'))
                     ->withHttpClientOptions(HttpClientOptions::default()->withConnectTimeout(5)->withTimeout(15));
             } catch (Throwable) {

@@ -11,19 +11,14 @@ class FirestoreCredentials
 {
     private ?array $connection = null;
 
+    public function __construct(private FirebaseServiceAccount $serviceAccount) {}
+
     public function connection(): array
     {
         if ($this->connection !== null) {
             return $this->connection;
         }
-        $path = config('firebase.credentials');
-        if (! is_string($path) || $path === '') {
-            throw new ScoreboardUnavailable('Firestore credentials are not configured.');
-        }
-        if (! preg_match('~^(?:[A-Za-z]:[\\\\/]|/)~', $path)) {
-            $path = base_path($path);
-        }
-        $credentials = new ServiceAccountCredentials('https://www.googleapis.com/auth/datastore', $path);
+        $credentials = new ServiceAccountCredentials('https://www.googleapis.com/auth/datastore', $this->serviceAccount->source());
         $projectId = config('firebase.project_id') ?: $credentials->getProjectId();
         if (! $projectId) {
             throw new ScoreboardUnavailable('Firestore project is not configured.');

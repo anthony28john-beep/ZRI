@@ -1,0 +1,16 @@
+{
+    auto_https off
+    admin off
+}
+
+:{$PORT:8080} {
+    root * /app/public
+    encode zstd gzip
+
+    @private path /.env /.env.* /.git/*
+    respond @private 404
+
+    php_server {
+        try_files {path} index.php
+    }
+}

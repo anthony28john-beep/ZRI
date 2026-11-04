@@ -14,6 +14,8 @@ use Illuminate\Routing\Middleware\ThrottleRequests;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(web: __DIR__.'/../routes/web.php', commands: __DIR__.'/../routes/console.php', health: '/up')
     ->withMiddleware(function (Middleware $middleware): void {
+        // Vercel terminates HTTPS at its proxy; local installations trust none by default.
+        $middleware->trustProxies(at: env('TRUSTED_PROXIES'));
         // User-based throttles must run after the current Firebase identity is loaded.
         $middleware->prependToPriorityList(ThrottleRequests::class, FirebaseSession::class);
         $middleware->alias([

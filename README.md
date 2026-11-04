@@ -170,6 +170,8 @@ Automated tests use mocked Firebase services and isolated session/cache stores. 
 
 ## Deployment
 
+For Vercel, use the included container configuration and follow [VERCEL.md](VERCEL.md). It uses encrypted cookie sessions, Redis, and private Firebase environment credentials. The SQL-based commands below apply to conventional PHP hosting.
+
 Use a PHP-capable hosting environment with production dependencies, built frontend assets, and persistent session/cache storage. Multiple instances must share those stores.
 
 Set `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` to the HTTPS address, `SESSION_ENCRYPT=true`, and `SESSION_SECURE_COOKIE=true`. Configure Firebase credentials and the SQL connection privately on the server.
