@@ -1,0 +1,33 @@
+.account-page .account-card.student-block-card { display: block; margin-top: 24px; padding: 28px 32px; }
+.student-block-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.student-block-heading h2 { font-size: 24px; letter-spacing: -.5px; }
+.student-block-description, .student-block-current p, .student-block-pending p { color: var(--color-muted); font-size: 13px; line-height: 1.8; }
+.student-block-current { padding: 20px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface-soft); }
+.student-block-current > span { display: block; color: var(--color-muted); font-size: 11px; margin-bottom: 8px; }
+.student-block-current > strong { display: block; font-size: 22px; color: var(--color-accent); margin-bottom: 10px; }
+.student-block-leave { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--color-border); }
+.student-block-leave summary { color: var(--color-accent); cursor: pointer; font-size: 13px; }
+.account-page .student-block-card .student-block-check { display: flex; align-items: start; gap: 12px; margin-bottom: 18px; color: var(--color-muted); font-size: 12px; line-height: 1.7; }
+.account-page .student-block-check input { width: 17px; height: 17px; min-height: 17px; margin-top: 3px; flex-shrink: 0; accent-color: var(--color-accent); }
+.student-block-card .button { width: auto; padding: 12px 18px; font-size: 13px; }
+.student-block-apply .button { margin-top: 18px; }
+.student-block-apply .tp-caption { margin-top: 12px; }
+.student-block-pending { padding: 20px; margin-top: 24px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface-soft); }
+.student-block-pending h3 { margin: 14px 0 10px; font-size: 18px; }
+.student-block-pending form { margin-top: 12px; }
+.student-block-pending .text-button { padding-left: 0; font-size: 12px; }
+.block-review-actions { display: flex; align-items: center; gap: 12px; }
+.block-review-actions form { margin: 0; }
+.tp-shell .block-review-actions .button { min-height: 36px; padding: 8px 14px; font-size: 12px; }
+.block-registration-hint { color: var(--color-muted); font-size: 12px; line-height: 1.7; margin-top: 10px; }
+.tp-table .tp-remove-student { color: var(--color-secondary); }
+.tp-removal-panel { max-width: 720px; }
+.tp-removal-panel > .tp-caption { margin: 8px 0 24px; }
+.tp-assignment-form .tp-removal-check { display: flex; align-items: start; gap: 12px; line-height: 1.7; }
+.tp-removal-check input { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; accent-color: var(--color-accent); }
+.tp-removal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 24px; }
+.student-block-card :is(button, select, summary, input):focus-visible { outline: 2px solid var(--color-accent); outline-offset: 4px; }
+@media (max-width: 600px) {
+    .account-page .account-card.student-block-card { padding: 24px 20px; }
+    .block-review-actions { flex-wrap: wrap; }
+}

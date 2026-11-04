@@ -1,0 +1,72 @@
+.game-about-page {
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(ellipse at 95% 15%, color-mix(in srgb, var(--color-surface-soft) 40%, transparent), transparent 40%), linear-gradient(150deg, var(--color-surface), var(--color-surface-soft) 55%, var(--color-surface));
+}
+
+.game-about-page .student-content { max-width: 1240px; padding: 52px 28px 72px; }
+.game-about-page .about-intro { display: flex; align-items: center; justify-content: space-between; gap: 40px; padding: 8px 8px 36px; }
+.game-about-page .about-intro-copy { max-width: 730px; }
+.game-about-page .brand-badge { margin-bottom: 18px; border-radius: 6px; font-size: 10px; letter-spacing: 2px; }
+.game-about-page .about-intro h1 { margin-bottom: 18px; color: var(--color-text); font-size: clamp(34px, 5vw, 56px); font-weight: 800; letter-spacing: -1.8px; line-height: 1.1; }
+.game-about-page .about-intro h1 span { color: var(--color-accent); }
+.game-about-page .about-intro p { color: var(--color-muted); font-size: 16px; line-height: 1.85; }
+.game-about-page .about-intro-emblem { position: relative; display: grid; place-items: center; flex-shrink: 0; width: 126px; height: 140px; margin-right: 24px; border: 1px solid var(--color-border); border-radius: 26px; color: var(--color-accent); background: linear-gradient(145deg, color-mix(in srgb, var(--color-surface-soft) 40%, transparent), var(--color-surface)); box-shadow: 0 0 60px rgba(74, 18, 35, 0.08); transform: rotate(8deg); }
+.game-about-page .about-intro-emblem svg { width: 72px; height: 72px; transform: rotate(-8deg); }
+.game-about-page .about-chapter-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 32px; }
+.game-about-page .about-chapter-nav a { display: flex; align-items: center; gap: 13px; padding: 18px 20px; border: 1px solid var(--color-border); border-radius: 10px; background: color-mix(in srgb, var(--color-surface-soft) 80%, transparent); color: var(--color-text); font-size: 13px; font-weight: 600; text-decoration: none; transition: background .18s, border-color .18s; }
+.game-about-page .about-chapter-nav a:hover { background: var(--color-surface-soft); border-color: var(--color-accent); }
+.game-about-page .about-chapter-nav a span:first-child { color: var(--color-accent); font-size: 11px; letter-spacing: 1px; }
+.game-about-page .about-chapter-nav a span:last-child { margin-left: auto; color: var(--color-accent); font-size: 20px; }
+.game-about-page .about-chapter { position: relative; margin-top: 28px; padding: 32px; overflow: hidden; border: 1px solid var(--color-border); border-radius: 18px; background: linear-gradient(135deg, var(--color-surface-soft), var(--color-surface) 65%); box-shadow: 0 16px 40px rgba(74, 18, 35, 0.08); scroll-margin-top: 24px; }
+.game-about-page .about-chapter::before { content: ''; position: absolute; top: 0; left: 32px; width: 70px; height: 2px; background: linear-gradient(90deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 13.33%, transparent)); }
+.game-about-page .about-chapter-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
+.game-about-page .about-step { display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border: 1px solid var(--color-border); border-radius: 12px; color: var(--color-accent); background: color-mix(in srgb, var(--color-surface-soft) 30.2%, transparent); font-size: 18px; font-weight: 700; }
+.game-about-page .about-eyebrow { margin: 0 0 7px; color: var(--color-accent); font-size: 9px; font-weight: 700; letter-spacing: 2px; line-height: 1.6; }
+.game-about-page .about-chapter h2 { color: var(--color-text); font-size: clamp(21px, 2.2vw, 28px); font-weight: 650; letter-spacing: -.65px; line-height: 1.25; }
+.game-about-page .game-about-preview { min-width: 0; margin: 0; overflow: hidden; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); box-shadow: 0 12px 30px rgba(74, 18, 35, 0.08); }
+.game-about-page .about-frame-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--color-border); background: var(--color-surface-soft); color: var(--color-muted); font-size: 9px; font-weight: 600; letter-spacing: 1.3px; }
+.game-about-page .about-frame-dots { display: flex; gap: 5px; }
+.game-about-page .about-frame-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-surface-soft); }
+.game-about-page .about-frame-dots i:first-child { background: var(--color-accent); }
+.game-about-page .about-frame-dots i:nth-child(2) { background: var(--color-accent); }
+.game-about-page .game-about-image { display: block; width: 100%; height: auto; }
+.game-about-page .game-about-preview figcaption { padding: 13px 16px; border-top: 1px solid var(--color-border); color: var(--color-muted); font-size: 11px; line-height: 1.7; }
+.game-about-page .about-overview-note { margin-top: 24px; padding: 17px 20px; border-left: 3px solid var(--color-accent); border-radius: 0 8px 8px 0; background: color-mix(in srgb, var(--color-accent) 3.14%, transparent); color: var(--color-muted); font-size: 14px; line-height: 1.85; }
+.game-about-page .about-split { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); align-items: center; gap: 32px; }
+.game-about-page .about-section-copy > p { color: var(--color-muted); font-size: 14px; line-height: 1.9; }
+.game-about-page .about-split .about-chapter-heading { align-items: flex-start; gap: 12px; }
+.game-about-page .about-split .about-step { width: 40px; height: 40px; font-size: 15px; border-radius: 10px; }
+.game-about-page .about-interface::before { background: linear-gradient(90deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 13.33%, transparent)); }
+.game-about-page .about-interface .about-step { color: var(--color-accent); border-color: var(--color-border); background: color-mix(in srgb, var(--color-accent) 6.27%, transparent); }
+.game-about-page kbd { display: inline-block; min-width: 23px; padding: 0 6px; border: 1px solid var(--color-border); border-bottom-width: 3px; border-radius: 4px; background: var(--color-surface-soft); color: var(--color-text); font: 600 12px/1.7 'Segoe UI', Arial, sans-serif; text-align: center; }
+.game-about-page .about-play-callout { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 32px; padding: 30px 32px; border: 1px solid var(--color-border); border-radius: 14px; background: linear-gradient(110deg, var(--color-surface-soft), var(--color-surface-soft)); }
+.game-about-page .about-play-callout .about-eyebrow { color: var(--color-accent); }
+.game-about-page .about-play-callout h2 { color: var(--color-text); font-size: clamp(18px, 2vw, 24px); font-weight: 600; letter-spacing: -.5px; }
+.game-about-page .about-play-button { display: inline-flex; align-items: center; justify-content: center; gap: 26px; width: auto; flex-shrink: 0; padding: 14px 24px; border-radius: 8px; font-size: 14px; text-decoration: none; }
+.game-about-page .about-play-button span { font-size: 22px; line-height: 1; }
+
+@media (max-width: 960px) {
+    .game-about-page .about-split { grid-template-columns: 1fr; gap: 24px; }
+    .game-about-page .about-intro-emblem { width: 98px; height: 110px; margin-right: 8px; }
+    .game-about-page .about-intro-emblem svg { width: 60px; height: 60px; }
+    .game-about-page .about-chapter-nav a { gap: 8px; padding: 16px 12px; font-size: 12px; }
+}
+@media (max-width: 600px) {
+    .game-about-page .student-content { padding: 32px 16px 40px; }
+    .game-about-page .about-intro { padding-inline: 4px; gap: 16px; }
+    .game-about-page .about-intro-emblem { display: none; }
+    .game-about-page .about-intro p { font-size: 14px; line-height: 1.8; }
+    .game-about-page .about-chapter-nav { grid-template-columns: 1fr; gap: 8px; margin-bottom: 24px; }
+    .game-about-page .about-chapter-nav a { padding: 13px 16px; }
+    .game-about-page .about-chapter { padding: 22px 16px; border-radius: 14px; }
+    .game-about-page .about-chapter::before { left: 16px; }
+    .game-about-page .about-chapter-heading { gap: 12px; }
+    .game-about-page .about-overview-note { padding: 14px 16px; font-size: 13px; }
+    .game-about-page .about-frame-bar { padding: 10px 12px; font-size: 8px; letter-spacing: .7px; }
+    .game-about-page .about-play-callout { flex-direction: column; align-items: stretch; padding: 24px 20px; }
+    .game-about-page .about-play-button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .game-about-page .about-chapter-nav a { transition: none; }
+}

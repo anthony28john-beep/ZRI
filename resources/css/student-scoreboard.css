@@ -1,0 +1,61 @@
+.scoreboard-page { min-height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; }
+.scoreboard-page .student-content { max-width: 1180px; padding: 46px 24px 64px; }
+.scoreboard-page .scoreboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+.scoreboard-page .brand-badge { margin-bottom: 14px; padding: 7px 12px; border-radius: 6px; font-size: 10px; letter-spacing: 1.8px; }
+.scoreboard-page h1 { margin-bottom: 10px; color: var(--color-text); font-size: clamp(28px, 4vw, 38px); font-weight: 700; letter-spacing: -1px; }
+.scoreboard-page .scoreboard-heading p { color: var(--color-muted); font-size: 14px; line-height: 1.7; }
+.scoreboard-page .scoreboard-play { display: inline-flex; align-items: center; justify-content: center; gap: 24px; flex-shrink: 0; width: auto; padding: 13px 22px; border-radius: 9px; font-size: 14px; text-decoration: none; }
+.scoreboard-page .scoreboard-play span { font-size: 22px; line-height: 1; }
+.scoreboard-page .scoreboard-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 28px; }
+.scoreboard-page .scoreboard-stat { display: flex; flex-direction: column; padding: 24px; border: 1px solid var(--color-border); border-top: 2px solid var(--color-accent); border-radius: 12px; background: linear-gradient(135deg, var(--color-surface-soft), var(--color-surface)); }
+.scoreboard-page .scoreboard-stat:first-child { border-top-color: var(--color-accent); }
+.scoreboard-page .scoreboard-stat-label { color: var(--color-text); font-size: 12px; font-weight: 600; }
+.scoreboard-page .scoreboard-stat strong { margin: 12px 0 8px; color: var(--color-text); font-size: 34px; font-weight: 650; line-height: 1.15; overflow-wrap: anywhere; }
+.scoreboard-page .scoreboard-stat:first-child strong { color: var(--color-accent); }
+.scoreboard-page .scoreboard-stat-note { color: var(--color-muted); font-size: 11px; line-height: 1.7; }
+.scoreboard-page .scoreboard-results { overflow: hidden; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); box-shadow: 0 16px 40px rgba(74, 18, 35, 0.08); }
+.scoreboard-page .scoreboard-results-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px; border-bottom: 1px solid var(--color-border); background: var(--color-surface-soft); }
+.scoreboard-page h2 { color: var(--color-text); font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
+.scoreboard-page .scoreboard-refresh { color: var(--color-accent); font-size: 12px; font-weight: 600; line-height: 1.7; }
+.scoreboard-page .scoreboard-table-scroll { overflow-x: auto; }
+.scoreboard-page .scoreboard-table-scroll:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+.scoreboard-page .scoreboard-table { width: 100%; min-width: 750px; border-collapse: collapse; text-align: left; }
+.scoreboard-page .scoreboard-table thead { color: var(--color-muted); background: var(--color-surface); }
+.scoreboard-page .scoreboard-table thead th { padding: 16px 20px; font-size: 10px; font-weight: 600; letter-spacing: .7px; text-transform: uppercase; white-space: nowrap; }
+.scoreboard-page .scoreboard-table tbody th,
+.scoreboard-page .scoreboard-table td { padding: 22px 20px; border-top: 1px solid var(--color-border); color: var(--color-text); font-size: 13px; font-weight: 400; line-height: 1.7; }
+.scoreboard-page .scoreboard-table tbody tr:hover { background: var(--color-surface-soft); }
+.scoreboard-page .scoreboard-level-name { display: block; color: var(--color-text); font-size: 14px; font-weight: 600; }
+.scoreboard-page .scoreboard-last-played { display: block; margin-top: 6px; color: var(--color-muted); font-size: 10px; font-weight: 400; }
+.scoreboard-page .scoreboard-table .scoreboard-score { color: var(--color-text); font-size: 17px; font-weight: 600; }
+.scoreboard-page .scoreboard-grade { color: var(--color-accent); font-weight: 650; }
+.scoreboard-page .scoreboard-status { display: inline-block; padding: 5px 10px; border: 1px solid var(--color-border); border-radius: 30px; background: var(--color-surface-soft); color: var(--color-muted); font-size: 10px; font-weight: 600; white-space: nowrap; }
+.scoreboard-page .scoreboard-status.is-completed { border-color: var(--color-success-border); background: var(--color-success-soft); color: var(--color-success); }
+.scoreboard-page .scoreboard-status.is-progress { border-color: var(--color-border); background: var(--color-surface-soft); color: var(--color-accent); }
+.scoreboard-page .scoreboard-footnote { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 17px 24px; border-top: 1px solid var(--color-border); color: var(--color-muted); font-size: 11px; line-height: 1.7; }
+.scoreboard-page .scoreboard-empty { margin: 20px 24px; padding: 18px; border: 1px dashed var(--color-border); border-radius: 8px; color: var(--color-muted); text-align: center; font-size: 14px; line-height: 1.7; }
+.scoreboard-page .scoreboard-unavailable { padding: 32px; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); }
+.scoreboard-page .scoreboard-unavailable p { margin: 14px 0 18px; color: var(--color-text); font-size: 14px; line-height: 1.8; }
+.scoreboard-page .scoreboard-leaderboards { margin-top: 32px; }
+.scoreboard-page .scoreboard-leaderboards > .scoreboard-results-heading { padding: 0 0 20px; background: transparent; border: 0; }
+.scoreboard-page .scoreboard-leaderboard-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.scoreboard-page .scoreboard-leaderboard h3 { color: var(--color-text); font-size: 16px; font-weight: 600; }
+.scoreboard-page .scoreboard-leaderboard .scoreboard-table { min-width: 0; table-layout: fixed; }
+.scoreboard-page .scoreboard-leaderboard .scoreboard-table tbody th { overflow-wrap: anywhere; }
+.scoreboard-page .scoreboard-leaderboard .scoreboard-table td,
+.scoreboard-page .scoreboard-leaderboard .scoreboard-table th:last-child { text-align: right; }
+@media (max-width: 700px) {
+    .scoreboard-page .scoreboard-leaderboard-grid { grid-template-columns: 1fr; }
+    .scoreboard-page .student-content { padding: 30px 16px 40px; }
+    .scoreboard-page .scoreboard-summary { gap: 10px; }
+    .scoreboard-page .scoreboard-stat { padding: 18px 14px; }
+    .scoreboard-page .scoreboard-stat strong { font-size: 28px; }
+    .scoreboard-page .scoreboard-results-heading { padding: 20px; }
+}
+@media (max-width: 480px) {
+    .scoreboard-page .scoreboard-heading { align-items: flex-start; flex-direction: column; gap: 20px; }
+    .scoreboard-page .scoreboard-play { width: 100%; }
+    .scoreboard-page .scoreboard-summary { grid-template-columns: 1fr; }
+    .scoreboard-page .scoreboard-stat { padding: 20px; }
+    .scoreboard-page .scoreboard-results-heading { align-items: flex-start; flex-direction: column; gap: 10px; }
+}
