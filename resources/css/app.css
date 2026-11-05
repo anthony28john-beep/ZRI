@@ -72,6 +72,7 @@
 
         .brand-panel {
             min-width: 0;
+            container-type: inline-size;
             --color-text: var(--color-inverse);
             --color-muted: var(--color-on-maroon);
             --color-accent: var(--color-accent-light);
@@ -98,9 +99,10 @@
         }
 
         .brand-panel h1 {
-            overflow-wrap: anywhere;
+            overflow-wrap: normal;
+            white-space: nowrap;
             margin-bottom: 18px;
-            font-size: clamp(36px, 5vw, 58px);
+            font-size: clamp(16px, 10cqw, 50px);
             line-height: 1;
         }
 
@@ -741,5 +743,4 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--color-accent); 
 @media (max-width: 480px) { .recovery-card { padding: 28px 22px; } }
 @media (max-width: 480px) {
     .auth-container .brand-panel, .auth-container .form-panel { padding: 28px; }
-    .auth-container .brand-panel h1 { font-size: clamp(26px, 7vw, 34px); }
 }

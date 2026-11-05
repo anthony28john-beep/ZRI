@@ -9,7 +9,7 @@
             <div class="brand-badge">CREATE YOUR ACCOUNT</div>
 
             <h1>
-                Join <span>ZeroRisk</span>
+                ZeroRisk<span>Initiative</span>
             </h1>
 
             <p>
