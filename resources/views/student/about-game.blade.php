@@ -96,7 +96,7 @@
         </section>
         <div class="about-play-callout">
             <div><p class="about-eyebrow">BETTER CHOICES. LOWER RISKS.</p><h2>Ready for your next challenge?</h2></div>
-            <a href="{{ route('student.play-game') }}" class="button about-play-button">Play Game <span aria-hidden="true">&rarr;</span></a>
+            <a href="{{ route('student.play-game') }}" class="button about-play-button">Download Game <span aria-hidden="true">&rarr;</span></a>
         </div>
     </main>
 </div>

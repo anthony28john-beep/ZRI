@@ -4,13 +4,14 @@
             ZeroRisk<span>Initiative</span>
         </a>
 
+        <x-navigation-menu :label="ucfirst($portalRole).' navigation'">
         <div class="portal-nav-links">
         @if ($portalRole === 'student')
             <a href="{{ route('dashboard') }}" class="portal-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" @if (request()->routeIs('dashboard')) aria-current="page" @endif>
                 Home
             </a>
             <a href="{{ route('student.play-game') }}" class="portal-nav-link {{ request()->routeIs('student.play-game') ? 'active' : '' }}" @if (request()->routeIs('student.play-game')) aria-current="page" @endif>
-                Play Game
+                Download Game
             </a>
             <a href="{{ route('student.about-game') }}" class="portal-nav-link {{ request()->routeIs('student.about-game') ? 'active' : '' }}" @if (request()->routeIs('student.about-game')) aria-current="page" @endif>
                 About the Game
@@ -33,6 +34,7 @@
             Account Information
         </a>
         </div>
+        </x-navigation-menu>
         @if (in_array($portalRole, ['student', 'teacher']))
             <form action="{{ route('logout') }}" method="POST" class="portal-logout">
                 @csrf

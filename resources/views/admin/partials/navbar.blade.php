@@ -9,12 +9,14 @@
             </span>
             <span><span class="admin-brand-name">ZeroRisk<span>Initiative</span></span><span class="admin-brand-caption">Administration workspace</span></span>
         </a>
+        <x-navigation-menu label="Administrator navigation">
         <div class="admin-nav-links">
             @foreach (['dashboard' => 'Home', 'admin.users.create' => 'Create Account', 'admin.users.index' => 'Manage Accounts', 'admin.classes' => 'Manage Classes'] as $destination => $label)
                 @php($active = request()->routeIs($destination) || ($destination === 'admin.users.index' && request()->routeIs('admin.users.delete')))
                 <a href="{{ route($destination) }}" class="admin-nav-link {{ $active ? 'is-active' : '' }}" @if ($active) aria-current="page" @endif>{{ $label }}</a>
             @endforeach
         </div>
+        </x-navigation-menu>
         <form action="{{ route('logout') }}" method="POST" class="admin-nav-logout">
             @csrf
             <button type="submit" class="button">Log Out <span aria-hidden="true">&rarr;</span></button>

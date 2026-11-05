@@ -18,6 +18,27 @@ document.querySelectorAll('.field-error[id]').forEach(error => {
     field.setAttribute('aria-describedby', [...descriptions].join(' '));
 });
 document.querySelector('[data-error-summary]')?.focus();
+
+const navigationDropdowns = document.querySelectorAll('[data-navigation-dropdown]');
+document.addEventListener('click', event => {
+    navigationDropdowns.forEach(dropdown => {
+        if (dropdown.open && !dropdown.contains(event.target)) dropdown.open = false;
+    });
+});
+document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    navigationDropdowns.forEach(dropdown => {
+        if (!dropdown.open) return;
+        const focusInside = dropdown.contains(document.activeElement);
+        dropdown.open = false;
+        if (focusInside) dropdown.querySelector('summary').focus();
+    });
+});
+navigationDropdowns.forEach(dropdown => {
+    dropdown.addEventListener('focusout', event => {
+        if (!dropdown.contains(event.relatedTarget)) dropdown.open = false;
+    });
+});
 document.addEventListener('submit', event => {
     const form = event.target;
     if (event.defaultPrevented || !(form instanceof HTMLFormElement)) return;

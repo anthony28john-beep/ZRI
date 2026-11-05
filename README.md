@@ -24,7 +24,7 @@ The website uses a maroon and white theme with dedicated administrator, teacher,
 
 Accounts support email verification, password recovery, and email/password updates. Administrator-created accounts require replacement of their temporary password.
 
-The Unity game runs separately and saves results to Firebase. The website reads these results; the Play Game page is reserved for game access and does not currently embed a playable build.
+The Unity game runs separately and saves results to Firebase. The website reads these results; the Download Game page is reserved for game downloads and does not currently provide an installer.
 
 ## Requirements
 
