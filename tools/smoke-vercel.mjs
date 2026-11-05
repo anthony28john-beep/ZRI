@@ -57,10 +57,13 @@ try {
     for (const suffix of ['one', 'two']) {
         const container = `${name}-${suffix}`;
         containers.push(container);
-        const args = ['run', '-d', '--name', container, '--network', name, '-p', '127.0.0.1::8080'];
+        // Exercise Vercel's default port and an explicit runtime PORT override.
+        const internalPort = suffix === 'one' ? 80 : 8080;
+        const args = ['run', '-d', '--name', container, '--network', name, '-p', `127.0.0.1::${internalPort}`];
+        if (suffix === 'two') args.push('-e', 'PORT=8080');
         for (const variable of Object.keys(environment)) args.push('-e', variable);
         docker([...args, image], environment);
-        const port = docker(['port', container, '8080/tcp']).match(/:(\d+)$/)?.[1];
+        const port = docker(['port', container, `${internalPort}/tcp`]).match(/:(\d+)$/)?.[1];
         assert.ok(port, 'Expected a localhost-only mapped port.');
         const base = `http://127.0.0.1:${port}`;
         await ready(base);

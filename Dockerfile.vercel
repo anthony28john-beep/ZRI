@@ -26,8 +26,9 @@ COPY --from=dependencies --chown=www-data:www-data /app /app
 COPY docker/Caddyfile /etc/frankenphp/Caddyfile
 RUN mkdir -p /config/caddy /data/caddy \
     && chown -R www-data:www-data /config /data \
+    && setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp \
     && chmod +x /app/docker/start.sh
-ENV PORT=8080 \
+ENV PORT=80 \
     APP_ENV=production \
     APP_DEBUG=false \
     LOG_CHANNEL=stderr \
@@ -43,5 +44,5 @@ ENV PORT=8080 \
     QUEUE_CONNECTION=sync \
     TRUSTED_PROXIES=*
 USER www-data
-EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT ["/app/docker/start.sh"]

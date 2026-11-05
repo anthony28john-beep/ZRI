@@ -43,6 +43,7 @@ The Dockerfile supplies these production defaults. Keep them when configuring Ve
 ```dotenv
 APP_ENV=production
 APP_DEBUG=false
+PORT=80
 LOG_CHANNEL=stderr
 LOG_LEVEL=warning
 SESSION_DRIVER=cookie
@@ -112,6 +113,10 @@ node tools/smoke-vercel.mjs
 The smoke check uses synthetic credentials and an isolated Redis container. It checks health, login, assets, shared sessions, and throttling without signing into or changing a live Firebase project. It requires Node.js 22+ and may download `redis:7-alpine`.
 
 ## Troubleshooting
+
+For `500 FUNCTION_INVOCATION_FAILED`, open the failed deployment's runtime Logs and reload its URL. This is a platform error; the screenshot alone does not identify its cause. If the logs contain `Vercel startup configuration is incomplete`, configure the named variables for the environment that produced that deployment (Production or Preview), then redeploy. Adding values only to Production does not configure a Preview deployment.
+
+The container listens on port 80 by default, matching Vercel's default routing port. Keep `PORT=80` in Vercel's environment settings unless you deliberately configure another port. The server reads the same `PORT` variable. The image permits its non-root process to bind to port 80.
 
 - **Startup configuration error:** Supply the missing environment variables and redeploy.
 - **Redis connection error:** Use the provider's Redis/TCP TLS URL, verify its credentials, and allow connections from the deployment.
