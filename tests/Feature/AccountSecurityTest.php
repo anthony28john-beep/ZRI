@@ -84,7 +84,7 @@ class AccountSecurityTest extends TestCase
 
     public function test_public_authentication_pages_render(): void
     {
-        foreach (['/login', '/register', '/forgot-password'] as $path) {
+        foreach (['/login', '/new-user', '/forgot-password'] as $path) {
             $this->get($path)->assertOk()->assertSee('name="_token"', false);
         }
     }
@@ -242,14 +242,15 @@ class AccountSecurityTest extends TestCase
             ->assertSessionMissing('_old_input.new_password')->assertSessionMissing('_old_input.new_password_confirmation');
     }
 
-    public function test_registration_does_not_accept_a_public_role_override(): void
+    public function test_old_registration_endpoint_cannot_create_accounts(): void
     {
-        $this->accounts->shouldReceive('create')->once()->with(Mockery::on(fn ($data) => ! array_key_exists('role', $data) && $data['name'] === 'Student'));
+        $this->accounts->shouldNotReceive('create');
+        $this->get('/register')->assertRedirect('/new-user');
         $this->post('/register', [
             'name' => 'Student', 'email' => 'student@example.com', 'role' => 'admin',
             'block_id' => 'a0000000-0000-4000-8000-000000000001',
             'password' => 'Secret123', 'password_confirmation' => 'Secret123',
-        ])->assertRedirect('/login');
+        ])->assertStatus(405);
     }
 
     public function test_admin_cannot_create_other_admins_through_the_form(): void

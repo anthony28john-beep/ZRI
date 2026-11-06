@@ -44,7 +44,7 @@ class AdminClassroomController extends Controller
             return back()->withInput($data)->withErrors(['block_name' => $exception->getMessage()]);
         }
 
-        return redirect()->route('admin.classes')->with('success', 'Block added. Students can now select it when registering.');
+        return redirect()->route('admin.classes')->with('success', 'Block added. You can now use its name in your student CSV.');
     }
 
     public function assignBlock(Request $request, Classrooms $classes)

@@ -11,10 +11,9 @@
     <main class="admin-container admin-main">
         <div class="admin-page-heading">
             <div class="admin-eyebrow">PEOPLE &amp; ACCESS</div>
-            <h1>Create an account</h1>
+            <h1>Create a teacher account</h1>
             <p class="admin-description">
-                Create student and teacher accounts below.
-                All users will sign in through the same login page.
+                Add teachers here. For students, import your CSV list and let them activate their own accounts.
             </p>
         </div>
 
@@ -55,7 +54,8 @@
                     <h2 id="account-types-heading">Account types</h2>
                     <div class="admin-guide-item">
                         <div class="admin-guide-role"><span aria-hidden="true"></span>Student</div>
-                        <p>Create an account for a student to access their dashboard.</p>
+                        <p>Import Fullname, email, and block. Students verify their email before setting a password.</p>
+                        <a class="tp-link" href="{{ route('admin.students.import') }}">Import Students &rarr;</a>
                     </div>
                     <div class="admin-guide-item">
                         <div class="admin-guide-role"><span aria-hidden="true"></span>Teacher</div>
@@ -74,7 +74,7 @@
                     </div>
                     <div>
                         <h2 id="new-account-heading">Add New Account</h2>
-                        <p>Choose whether the account belongs to a student or teacher.</p>
+                        <p>Create a teacher account with a temporary password.</p>
                     </div>
                 </div>
 
@@ -97,22 +97,9 @@
                                 <div class="form-group admin-field-wide">
                                     <label for="role">Account type</label>
                                     <select id="role" name="role" required>
-                                        <option value="">Select account type</option>
-                                        <option value="student" @selected(old('role') === 'student')>Student</option>
-                                        <option value="teacher" @selected(old('role') === 'teacher')>Teacher</option>
+                                        <option value="teacher">Teacher</option>
                                     </select>
                 <x-field-error name="role" />
-                                </div>
-                                <div class="form-group admin-field-wide">
-                                    <label for="block_id">Student block</label>
-                                    <select id="block_id" name="block_id">
-                                        <option value="">Select a block (required for students)</option>
-                                        @foreach ($blocks as $id => $name)
-                                            <option value="{{ $id }}" @selected(old('block_id') === $id)>{{ $name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <x-field-error name="block_id" />
-                                    <p class="admin-field-hint">{{ $blocksUnavailable ? 'Blocks are temporarily unavailable. Please refresh before creating a student.' : 'Teacher accounts do not need a block.' }} <a class="tp-link" href="{{ route('admin.classes') }}">Manage blocks</a></p>
                                 </div>
                             </div>
                         </fieldset>

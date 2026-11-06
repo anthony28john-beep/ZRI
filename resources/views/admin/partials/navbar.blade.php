@@ -11,8 +11,8 @@
         </a>
         <x-navigation-menu label="Administrator navigation">
         <div class="admin-nav-links">
-            @foreach (['dashboard' => 'Home', 'admin.users.create' => 'Create Account', 'admin.users.index' => 'Manage Accounts', 'admin.classes' => 'Manage Classes'] as $destination => $label)
-                @php($active = request()->routeIs($destination) || ($destination === 'admin.users.index' && request()->routeIs('admin.users.delete')))
+            @foreach (['dashboard' => 'Home', 'admin.users.create' => 'Create Account', 'admin.students.import' => 'Import Students', 'admin.users.index' => 'Manage Accounts', 'admin.classes' => 'Manage Classes'] as $destination => $label)
+                @php($active = request()->routeIs($destination) || ($destination === 'admin.users.index' && request()->routeIs('admin.users.delete')) || ($destination === 'admin.students.import' && request()->routeIs('admin.students.import.*')))
                 <a href="{{ route($destination) }}" class="admin-nav-link {{ $active ? 'is-active' : '' }}" @if ($active) aria-current="page" @endif>{{ $label }}</a>
             @endforeach
         </div>

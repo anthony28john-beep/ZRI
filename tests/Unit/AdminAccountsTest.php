@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Exceptions\AccountException;
 use App\Services\AdminAccounts;
+use App\Services\StudentEnrollment;
 use Kreait\Firebase\Contract\Auth;
 use Kreait\Firebase\Contract\Database;
 use Kreait\Firebase\Database\Reference;
@@ -160,6 +161,17 @@ class AdminAccountsTest extends TestCase
         $this->read('classes', []);
         $this->auth->shouldReceive('deleteUser')->with('victim')->andThrow(new UserNotFound('Missing user'));
         $this->root()->shouldReceive('update')->once()->with(['users/victim' => null, 'teacher_classes/victim' => null]);
+        $this->accounts->delete('victim', 'admin');
+    }
+
+    public function test_deletion_also_clears_the_matching_invitation_so_admin_can_reimport_later(): void
+    {
+        $this->read('users/victim', ['role' => 'student', 'email' => 's@example.com']);
+        $this->read('classes', []);
+        $path = 'student_invitations/'.StudentEnrollment::key('s@example.com');
+        $this->read($path, ['uid' => 'victim', 'status' => 'active']);
+        $this->auth->shouldReceive('deleteUser')->once()->with('victim');
+        $this->root()->shouldReceive('update')->once()->with(['users/victim' => null, 'teacher_classes/victim' => null, $path => null]);
         $this->accounts->delete('victim', 'admin');
     }
 }

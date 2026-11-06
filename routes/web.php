@@ -7,6 +7,8 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlockMembershipController;
 use App\Http\Controllers\StudentAccountController;
+use App\Http\Controllers\StudentActivationController;
+use App\Http\Controllers\StudentImportController;
 use App\Http\Controllers\StudentScoreboardController;
 use App\Http\Controllers\TeacherAccountController;
 use App\Http\Controllers\TeacherPortalController;
@@ -16,8 +18,12 @@ Route::middleware('no.cache')->group(function () {
     Route::redirect('/', '/login');
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login.submit');
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration')->name('register.submit');
+    Route::get('/register', fn () => redirect()->route('new-user'))->name('register');
+    Route::get('/new-user', [StudentActivationController::class, 'show'])->name('new-user');
+    Route::post('/new-user', [StudentActivationController::class, 'send'])->middleware('throttle:activation')->name('new-user.send');
+    Route::get('/new-user/activate', [StudentActivationController::class, 'activate'])->middleware('throttle:activation-link')->name('new-user.activate');
+    Route::get('/new-user/password', [StudentActivationController::class, 'password'])->name('new-user.password');
+    Route::post('/new-user/password', [StudentActivationController::class, 'complete'])->middleware('throttle:activation-password')->name('new-user.complete');
     Route::get('/forgot-password', [AccountRecoveryController::class, 'forgotPassword'])->name('password.request');
     Route::post('/forgot-password', [AccountRecoveryController::class, 'sendPasswordReset'])->middleware('throttle:recovery')->name('password.email');
     // Logout remains available even during an upstream outage or an expired session.
@@ -33,6 +39,13 @@ Route::middleware('no.cache')->group(function () {
             Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
             Route::post('/admin/users', [AdminUserController::class, 'store'])->middleware(['role:admin', 'throttle:account'])->name('admin.users.store');
             Route::middleware('role:admin')->group(function () {
+                Route::get('/admin/students/import', [StudentImportController::class, 'index'])->name('admin.students.import');
+                Route::get('/admin/students/template', [StudentImportController::class, 'template'])->name('admin.students.template');
+                Route::post('/admin/students/import/preview', [StudentImportController::class, 'preview'])->middleware('throttle:account')->name('admin.students.import.preview');
+                Route::get('/admin/students/import/{preview}', [StudentImportController::class, 'show'])->whereUuid('preview')->name('admin.students.import.show');
+                Route::get('/admin/students/import/{preview}/report', [StudentImportController::class, 'report'])->whereUuid('preview')->name('admin.students.import.report');
+                Route::post('/admin/students/import/{preview}', [StudentImportController::class, 'store'])->whereUuid('preview')->middleware('throttle:account')->name('admin.students.import.store');
+                Route::delete('/admin/students/invitations/{invitation}', [StudentImportController::class, 'revoke'])->where('invitation', '[a-f0-9]{64}')->middleware('throttle:account')->name('admin.students.invitation.destroy');
                 Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
                 Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.users.create');
                 Route::get('/admin/users/{uid}/delete', [AdminUserController::class, 'confirmDeletion'])->name('admin.users.delete');

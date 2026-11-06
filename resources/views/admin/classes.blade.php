@@ -15,7 +15,7 @@
         @php($pupils = array_filter($users, fn ($user) => $user['role'] === 'student'))
         @php($blocks = $blocks ?? [])
         <section class="tp-panel tp-class-form" aria-labelledby="blocks-heading">
-            <div class="cm-section-title"><span class="cm-number" aria-hidden="true">1</span><div><h2 id="blocks-heading">Blocks</h2><p class="tp-caption">These names appear when students register.</p></div></div>
+            <div class="cm-section-title"><span class="cm-number" aria-hidden="true">1</span><div><h2 id="blocks-heading">Blocks</h2><p class="tp-caption">Use these block names in your student CSV.</p></div></div>
             <form method="POST" action="{{ route('admin.blocks.store') }}" class="tp-toolbar tp-block-form">
                 @csrf
                 <div><label for="block-name">Block name</label><input id="block-name" name="block_name" value="{{ old('block_name') }}" maxlength="100" placeholder="e.g. BSIT 1A" required></div>
@@ -27,7 +27,7 @@
                     @forelse ($blocks as $blockId => $blockName)
                         @php($blockStudents = count(array_filter($pupils, fn ($pupil) => ($pupil['block_id'] ?? null) === $blockId)))
                         @php($blockClasses = count(array_filter($classes, fn ($class) => ($class['block_id'] ?? null) === $blockId)))
-                        @php($blockPending = count(array_filter($pupils, fn ($pupil) => ($pupil['pending_block_id'] ?? null) === $blockId)))
+                        @php($blockPending = count(array_filter($pupils, fn ($pupil) => ($pupil['pending_block_id'] ?? null) === $blockId)) + ($invitation_counts[$blockId] ?? 0))
                         <tr><th scope="row">{{ $blockName }}</th><td>{{ $blockStudents }}</td><td>{{ $blockPending }}</td><td>{{ $blockClasses }}</td><td><a class="admin-delete-link" href="{{ route('admin.blocks.delete', $blockId) }}">Delete block<span class="admin-visually-hidden"> {{ $blockName }}</span></a></td></tr>
                     @empty
                         <tr><td colspan="5">No blocks yet. Add your first block above.</td></tr>

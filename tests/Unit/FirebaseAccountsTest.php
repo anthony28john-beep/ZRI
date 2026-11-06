@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Exceptions\AccountException;
 use App\Services\FirebaseAccounts;
-use App\Services\FullNames;
+use App\Services\StudentEnrollment;
 use Kreait\Firebase\Auth\SendActionLink\FailedToSendActionLink;
 use Kreait\Firebase\Auth\SignIn\FailedToSignIn;
 use Kreait\Firebase\Auth\SignInResult;
@@ -12,8 +12,6 @@ use Kreait\Firebase\Auth\UserRecord;
 use Kreait\Firebase\Contract\Auth;
 use Kreait\Firebase\Contract\Database;
 use Kreait\Firebase\Database\Reference;
-use Kreait\Firebase\Database\Snapshot;
-use Kreait\Firebase\Database\Transaction;
 use Kreait\Firebase\Exception\Auth\UserNotFound;
 use Mockery;
 use RuntimeException;
@@ -70,13 +68,13 @@ class FirebaseAccountsTest extends TestCase
         $this->auth->shouldReceive('deleteUser')->once()->with('test-user');
         $this->reference->shouldReceive('remove')->once();
         $this->expectException(AccountException::class);
-        $this->accounts->create(['name' => 'Test User', 'email' => 'test@example.com', 'password' => 'Secret123']);
+        $this->accounts->create(['name' => 'Test User', 'email' => 'test@example.com', 'password' => 'Secret123', 'role' => 'teacher'], 'admin');
     }
 
-    public function test_public_creation_always_assigns_student_role(): void
+    public function test_public_creation_is_rejected(): void
     {
-        $this->auth->shouldReceive('createUser')->once()->andReturn($this->record());
-        $this->reference->shouldReceive('set')->once()->with(Mockery::on(fn ($profile) => $profile['role'] === 'student' && $profile['must_change_password'] === false && $profile['fullname'] === 'Test'));
+        $this->auth->shouldNotReceive('createUser');
+        $this->expectException(AccountException::class);
         $this->accounts->create(['name' => 'Test', 'email' => 'test@example.com', 'password' => 'Secret123', 'role' => 'admin']);
     }
 
@@ -87,13 +85,6 @@ class FirebaseAccountsTest extends TestCase
         $this->assertSame('Ada Lovelace', $this->accounts->identity('test-user')['name']);
     }
 
-    public function test_student_registration_creates_an_application_without_joining_the_block(): void
-    {
-        $this->auth->shouldReceive('createUser')->once()->andReturn($this->record());
-        $this->reference->shouldReceive('set')->once()->with(Mockery::on(fn ($profile) => $profile['role'] === 'student' && $profile['block_id'] === null && $profile['block_application']['block_id'] === 'selected-block' && isset($profile['block_application']['id'])));
-        $this->accounts->create(['name' => 'Test', 'email' => 'test@example.com', 'password' => 'Secret123', 'block_id' => 'selected-block']);
-    }
-
     public function test_admin_created_accounts_require_password_replacement(): void
     {
         $this->auth->shouldReceive('createUser')->once()->andReturn($this->record());
@@ -101,61 +92,48 @@ class FirebaseAccountsTest extends TestCase
         $this->accounts->create(['name' => 'Test', 'email' => 'test@example.com', 'password' => 'Secret123', 'role' => 'teacher'], 'admin-user');
     }
 
-    public function test_administrator_created_student_retains_approved_block_membership(): void
+    public function test_administrator_cannot_bypass_student_import_with_a_password(): void
     {
-        $this->auth->shouldReceive('createUser')->once()->andReturn($this->record());
-        $this->reference->shouldReceive('set')->once()->with(Mockery::on(fn ($profile) => $profile['block_id'] === 'selected-block' && $profile['block_application'] === null));
-        $this->accounts->create(['name' => 'Test', 'email' => 'test@example.com', 'password' => 'Secret123', 'role' => 'student', 'block_id' => 'selected-block'], 'admin-user');
+        $this->auth->shouldNotReceive('createUser');
+        $this->expectException(AccountException::class);
+        $this->accounts->create(['role' => 'student'], 'admin');
     }
 
-    public function test_missing_profile_is_repaired_without_privilege_escalation(): void
+    public function test_missing_profile_requires_import_and_keeps_existing_uid_and_password(): void
     {
         $this->auth->shouldReceive('getUser')->with('test-user')->andReturn($this->record());
-        $this->reference->shouldReceive('getValue')->andReturn(null);
-        $transaction = Mockery::mock(Transaction::class);
-        $transaction->shouldReceive('snapshot')->with($this->reference)->andReturn(new Snapshot($this->reference, null));
-        $transaction->shouldReceive('set')->once()->with($this->reference, Mockery::on(fn ($profile) => $profile['role'] === 'student' && $profile['must_change_password'] === false && ! isset($profile['temporary_password_version']) && ! isset($profile['block_id'])));
-        $this->database->shouldReceive('runTransaction')->once()->andReturnUsing(fn ($callback) => $callback($transaction));
-        $user = $this->accounts->identity('test-user', repairMissing: true);
-        $this->assertSame('student', $user['role']);
-        $this->assertFalse($user['must_change_password']);
-    }
-
-    public function test_verified_unity_login_creates_a_full_name_profile_without_changing_the_password(): void
-    {
-        $names = Mockery::mock(FullNames::class);
-        $names->shouldReceive('forProfile')->andReturn('Ada Lovelace');
-        $accounts = new FirebaseAccounts($this->auth, $this->database, $names);
-        $this->auth->shouldReceive('signInWithEmailAndPassword')->once()->with('test@example.com', 'UnitySecret123')
+        $this->auth->shouldReceive('signInWithEmailAndPassword')->with('test@example.com', 'UnitySecret123')
             ->andReturn(SignInResult::fromData(['localId' => 'test-user']));
-        $this->auth->shouldReceive('getUser')->with('test-user')->andReturn($this->record(['displayName' => 'gamer123']));
-        $this->auth->shouldNotReceive('updateUser');
         $this->auth->shouldNotReceive('createUser');
+        $this->auth->shouldNotReceive('updateUser');
         $this->reference->shouldReceive('getValue')->andReturn(null);
-        $transaction = Mockery::mock(Transaction::class);
-        $transaction->shouldReceive('snapshot')->with($this->reference)->andReturn(new Snapshot($this->reference, null));
-        $transaction->shouldReceive('set')->once()->with($this->reference, Mockery::on(fn ($profile) => $profile['uid'] === 'test-user' && $profile['fullname'] === 'Ada Lovelace' && $profile['name'] === 'Ada Lovelace'
-            && $profile['email'] === 'test@example.com' && $profile['role'] === 'student'
-            && $profile['must_change_password'] === false && ! isset($profile['temporary_password_version'])
-        ));
-        $this->database->shouldReceive('runTransaction')->once()->andReturnUsing(fn ($callback) => $callback($transaction));
-        $user = $accounts->signIn('test@example.com', 'UnitySecret123');
-        $this->assertTrue($user['email_verified']);
-        $this->assertFalse($user['must_change_password']);
+        $enrollment = Mockery::mock(StudentEnrollment::class);
+        $enrollment->shouldReceive('admitExisting')->once()->with('test-user', 'test@example.com')->andReturn($this->profile + ['fullname' => 'Ada Lovelace']);
+        $this->app->instance(StudentEnrollment::class, $enrollment);
+        $user = $this->accounts->signIn('test@example.com', 'UnitySecret123');
+        $this->assertSame('test-user', $user['uid']);
         $this->assertSame('Ada Lovelace', $user['name']);
+        $this->assertTrue($user['email_verified']);
     }
 
-    public function test_creating_a_missing_profile_does_not_verify_an_unverified_unity_account(): void
+    public function test_unimported_orphan_is_denied(): void
     {
-        $this->auth->shouldReceive('getUser')->with('test-user')->andReturn($this->record(['emailVerified' => false]));
+        $this->auth->shouldReceive('getUser')->andReturn($this->record());
         $this->reference->shouldReceive('getValue')->andReturn(null);
-        $transaction = Mockery::mock(Transaction::class);
-        $transaction->shouldReceive('snapshot')->with($this->reference)->andReturn(new Snapshot($this->reference, null));
-        $transaction->shouldReceive('set')->once();
-        $this->database->shouldReceive('runTransaction')->once()->andReturnUsing(fn ($callback) => $callback($transaction));
-        $user = $this->accounts->identity('test-user', repairMissing: true);
-        $this->assertFalse($user['email_verified']);
-        $this->assertFalse($user['must_change_password']);
+        $enrollment = Mockery::mock(StudentEnrollment::class);
+        $enrollment->shouldReceive('admitExisting')->andThrow(new AccountException('Contact your administrator.'));
+        $this->app->instance(StudentEnrollment::class, $enrollment);
+        $this->expectException(AccountException::class);
+        $this->accounts->identity('test-user', repairMissing: true);
+    }
+
+    public function test_incomplete_activation_cannot_be_bypassed_with_password_recovery(): void
+    {
+        $this->auth->shouldReceive('getUser')->andReturn($this->record());
+        $this->reference->shouldReceive('getValue')->andReturn($this->profile + ['activation_required' => true]);
+        $this->expectException(AccountException::class);
+        $this->expectExceptionMessage('Complete New User activation');
+        $this->accounts->identity('test-user', repairMissing: true);
     }
 
     public function test_existing_administrator_issued_password_requirement_is_preserved_on_login(): void
@@ -166,17 +144,6 @@ class FirebaseAccountsTest extends TestCase
         $this->database->shouldNotReceive('runTransaction');
         $this->auth->shouldNotReceive('updateUser');
         $this->assertTrue($this->accounts->signIn('test@example.com', 'Temporary123')['must_change_password']);
-    }
-
-    public function test_repair_preserves_a_concurrently_created_profile(): void
-    {
-        $this->auth->shouldReceive('getUser')->with('test-user')->andReturn($this->record());
-        $this->reference->shouldReceive('getValue')->andReturn(null);
-        $transaction = Mockery::mock(Transaction::class);
-        $transaction->shouldReceive('snapshot')->andReturn(new Snapshot($this->reference, array_merge($this->profile, ['role' => 'teacher'])));
-        $transaction->shouldNotReceive('set');
-        $this->database->shouldReceive('runTransaction')->andReturnUsing(fn ($callback) => $callback($transaction));
-        $this->assertSame('teacher', $this->accounts->identity('test-user', repairMissing: true)['role']);
     }
 
     public function test_remote_email_is_canonical_even_when_reconciliation_fails(): void

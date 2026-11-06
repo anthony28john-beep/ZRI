@@ -45,6 +45,13 @@ class AdminAccounts
         // Read relationships before the irreversible Auth operation. Failed reads stop deletion.
         $classes = $this->read('classes');
         $updates = ['users/'.$uid => null, 'teacher_classes/'.$uid => null];
+        if ($target['email'] !== '') {
+            $invitationPath = 'student_invitations/'.StudentEnrollment::key($target['email']);
+            $invitation = $this->read($invitationPath);
+            if (($invitation['uid'] ?? $invitation['activation_uid'] ?? null) === $uid) {
+                $updates[$invitationPath] = null;
+            }
+        }
         foreach ($classes as $id => $class) {
             if (! Str::isUuid((string) $id) || ! is_array($class)) {
                 continue;

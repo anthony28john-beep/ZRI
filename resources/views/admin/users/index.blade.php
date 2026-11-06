@@ -9,6 +9,7 @@
             <a class="button" href="{{ route('admin.users.create') }}">Create Account &rarr;</a>
         </header>
         @include('partials.messages')
+        <p><a class="button" href="{{ route('admin.students.import') }}">Import Students from CSV &rarr;</a></p>
         <form method="GET" action="{{ route('admin.users.index') }}" class="tp-toolbar">
             <div><label for="q">Find an account</label><input id="q" name="q" value="{{ $search }}" maxlength="100" placeholder="Search name or email"></div>
             <div><label for="role">Account type</label><select id="role" name="role"><option value="">Students and teachers</option><option value="student" @selected($role === 'student')>Students</option><option value="teacher" @selected($role === 'teacher')>Teachers</option></select></div>

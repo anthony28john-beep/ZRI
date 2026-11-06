@@ -1,0 +1,13 @@
+.enrollment-page { display: grid; gap: 24px; }
+.enrollment-upload h2 { margin-bottom: 12px; }
+.enrollment-upload .tp-caption { margin-bottom: 14px; line-height: 1.7; }
+.enrollment-upload-form { display: flex; align-items: end; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+.enrollment-upload-form .form-group { flex: 1 1 280px; margin-bottom: 0; }
+.enrollment-upload-form .button { width: auto; }
+.enrollment-confirm { display: grid; gap: 16px; padding: 20px 0; }
+.enrollment-confirm label { display: flex; align-items: start; gap: 10px; line-height: 1.6; }
+.enrollment-confirm input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 4px; accent-color: var(--color-accent); }
+.enrollment-confirm .button { width: fit-content; }
+.enrollment-page td { overflow-wrap: anywhere; }
+.enrollment-page details summary { cursor: pointer; }
+.activation-steps { padding-left: 22px; margin-top: 24px; color: var(--color-on-maroon); line-height: 2; }

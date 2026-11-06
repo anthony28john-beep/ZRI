@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ZeroRiskInitiative
 
 ZeroRiskInitiative is a school capstone project that connects a Unity safety education game with a Laravel web portal. Students can view their game results, teachers can monitor their classes, and administrators can manage accounts, blocks, and teacher assignments.
@@ -20,7 +19,7 @@ The website uses a maroon and white theme with dedicated administrator, teacher,
 | --- | --- |
 | Student | Home, About the Game, personal scoreboard, level leaderboards, account information, and block applications |
 | Teacher | Class overview, student rosters, individual results, level progress, leaderboards, application review, and student removal |
-| Administrator | Account creation and management, account deletion, block management, and teacher assignments |
+| Administrator | Student CSV import and activation invitations, teacher account creation, account deletion, block management, and teacher assignments |
 
 Accounts support email verification, password recovery, and email/password updates. Administrator-created accounts require replacement of their temporary password.
 
@@ -82,9 +81,24 @@ Sign in and complete email verification. The command assigns administrator acces
 
 ## Accounts and verification
 
-Website registration asks for a full name, email, password, and selected block. The block selection becomes an application requiring teacher approval.
+Student enrollment is controlled by administrator CSV imports. The public login page offers **New User** instead of open registration. Teacher accounts are created separately with temporary passwords.
 
-Students registered in Unity can sign in with the same Firebase email and password. A successful login creates a missing website profile with the student role and the available full name. These students keep their existing password. Existing profiles and administrator-issued temporary-password requirements are preserved.
+### Import students
+
+1. Create blocks in **Manage Classes** and assign their teachers.
+2. Open **Import Students**, download the template, and prepare a UTF-8 CSV with exactly `Fullname,email,block`. Column order and header capitalization may vary; quoted names containing commas are supported.
+3. Upload up to 100 students per file (1 MB maximum). Preview names, emails, and matching blocks, then confirm the import. Duplicate emails within the file, missing fields, unknown blocks, and non-student accounts are flagged. Existing website students are skipped without changing credentials, names, membership, or scores.
+4. Download the import report and correct failed rows before uploading again. Reimporting does not create duplicate invitations. To correct a pending invitation, remove it on the import page and import its corrected row.
+5. Students choose **New User**, enter the imported email, open the Firebase verification email, and select **Continue** after verification. Only then can they set a password. The emailed activation proof expires after one hour; password setup sessions last 15 minutes. A resend replaces the previous activation proof.
+6. Students sign in using that email/password on the website and game. Their imported block becomes an application requiring teacher acceptance; import does not directly approve membership.
+
+Set `APP_URL` to the actual public website URL and authorize its hostname in Firebase Authentication. Keep Firebase's default hosted email-verification action handler; its Continue button returns the student to `/new-user/activate`. No custom SMTP service or passwordless sign-in provider is needed. Test delivery, verification, Continue, and password setup on your deployed domain before using a real class list.
+
+Existing website accounts continue to work without reactivation. Existing Unity accounts keep their Firebase UID, password, verification status, and game records. If they lack a website profile, import their email first, then have them use normal login (or Forgot Password); the authenticated login attaches their imported student profile without replacing the Unity account. Unlisted accounts cannot automatically create a new website profile.
+
+This repository contains the Laravel website, not the Unity source. Remove Unity registration in the game project and direct new players to the website. Removing a client registration screen alone does not enforce enrollment: game access and Firebase security rules must independently check approved student access.
+
+Invitations are stored server-side under `student_invitations/{sha256(normalized-email)}` in Realtime Database. Activation creates a Firebase Authentication account without a student-supplied password, then adds the password only after Firebase verification and a valid emailed proof. Raw activation proofs and passwords are not stored in the invitation. Keep invitations private in database rules; hashing an email key is not access control. CSV previews/reports use Laravel's shared cache, not session cookies (15-minute previews, one-hour reports). Back up the database and restrict service-account access.
 
 Unverified users see the email-verification page before accessing protected dashboards. The website checks Firebase Authentication for the current verification status. Changing an account's email clears its verification status.
 
@@ -103,7 +117,7 @@ Administrators create blocks and assign teachers through Manage Classes. Approve
 
 Teachers with several classes can switch between them using the class selector. Individual records and removal actions are limited to currently assigned classes. Ownership and membership are checked again when an action is submitted.
 
-Blocks can be deleted only when they have no students, pending applications, or class assignments. Account and block deletion require confirmation. Deleting a teacher retains their classes for reassignment; deleting an account retains its Firestore game records.
+Blocks can be deleted only when they have no students, pending applications, imported invitations, or class assignments. Account and block deletion require confirmation. Deleting a teacher retains their classes for reassignment; deleting an account retains its Firestore game records and clears its matching enrollment invitation.
 
 ## Game results
 
@@ -194,8 +208,3 @@ Ensure storage and cache directories have the required permissions and remove th
 - [Firebase Authentication](https://firebase.google.com/docs/auth)
 - [Firebase Admin SDK for PHP](https://firebase-php.readthedocs.io/)
 - [Firestore REST API](https://firebase.google.com/docs/firestore/use-rest-api)
-
-=======
-# ZRI
-ZeroRiskInitiative
->>>>>>> e9123aac9def85940125a85e716d669e7a95d5dc

@@ -47,12 +47,40 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(30)->by('login-ip:'.$request->ip()),
             Limit::perMinute(5)->by('login:'.hash('sha256', strtolower((string) $request->input('email')).'|'.$request->ip())),
         ]);
-        RateLimiter::for('registration', fn (Request $request) => Limit::perHour(10)->by('register:'.$request->ip()));
+        RateLimiter::for('activation', fn (Request $request) => [
+            Limit::perMinute(30)->by('activation-ip:'.$request->ip())->response($this->activationLimitResponse(...)),
+            Limit::perMinute(1)->by('activation-email:'.hash('sha256', strtolower(trim((string) $request->input('email')))))->response($this->activationLimitResponse(...)),
+            Limit::perHour(5)->by('activation-hour:'.hash('sha256', strtolower(trim((string) $request->input('email')))))->response($this->activationLimitResponse(...)),
+        ]);
+        // Opening an emailed link and setting a password must not consume the resend quota.
+        RateLimiter::for('activation-link', fn (Request $request) => [
+            Limit::perMinute(60)->by('activation-link:'.$request->ip())->response($this->activationLimitResponse(...)),
+        ]);
+        RateLimiter::for('activation-password', fn (Request $request) => [
+            Limit::perMinute(60)->by('activation-password-ip:'.$request->ip())->response($this->activationLimitResponse(...)),
+            Limit::perMinute(5)->by('activation-password:'.hash('sha256', (string) $request->session()->get('student_activation.email', $request->ip())))->response($this->activationLimitResponse(...)),
+        ]);
         RateLimiter::for('recovery', fn (Request $request) => [
             Limit::perMinute(5)->by('recovery:'.$request->ip()),
             Limit::perHour(3)->by('recovery-email:'.hash('sha256', strtolower((string) $request->input('email')))),
         ]);
         RateLimiter::for('account', fn (Request $request) => Limit::perMinute(5)->by('account:'.$request->user()?->getAuthIdentifier()));
         RateLimiter::for('verification', fn (Request $request) => Limit::perMinute(1)->by('verify:'.$request->user()?->getAuthIdentifier()));
+    }
+
+    private function activationLimitResponse(Request $request, array $headers)
+    {
+        $seconds = max(1, (int) ($headers['Retry-After'] ?? 60));
+        $wait = $seconds < 60 ? $seconds.' seconds' : (int) ceil($seconds / 60).' minute(s)';
+        $message = $request->routeIs('new-user.send')
+            ? 'Please wait '.$wait.' before requesting another verification email. If you already received one, open the latest email, verify your address, and select Continue to set your password.'
+            : 'Please wait '.$wait.' before trying again. If you opened a verification link, reopen the original email link after waiting.';
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message], 429, $headers);
+        }
+
+        return redirect()->route($request->routeIs('new-user.complete') ? 'new-user.password' : 'new-user')
+            ->withErrors(['activation' => $message])->withInput($request->only('email'))->withHeaders($headers);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Exceptions\ClassroomUnavailable;
 use App\Services\Classrooms;
 use App\Services\FirebaseAccounts;
 use Mockery;
@@ -41,35 +40,13 @@ class BlockRegistrationTest extends TestCase
         return $this->withSession(['firebase_user' => $this->identity + ['authenticated_at' => now()->timestamp]]);
     }
 
-    public function test_registration_lists_available_blocks_and_preserves_valid_choice(): void
+    public function test_new_user_page_does_not_offer_public_registration_or_block_selection(): void
     {
-        $this->classes->shouldReceive('blocks')->andReturn([self::BLOCK => 'BSIT 1A']);
-        $this->get('/register')->assertOk()->assertSee('Your block')->assertSee('BSIT 1A');
-        $this->accounts->shouldReceive('create')->once()->with(Mockery::on(fn ($data) => $data['block_id'] === self::BLOCK && ! isset($data['role'])));
-        $this->post('/register', $this->registration() + ['role' => 'admin'])->assertRedirect('/login');
-    }
-
-    public function test_missing_and_unknown_blocks_prevent_account_creation(): void
-    {
-        $this->classes->shouldReceive('blocks')->andReturn([self::BLOCK => 'BSIT 1A']);
         $this->accounts->shouldNotReceive('create');
-        $this->post('/register', array_diff_key($this->registration(), ['block_id' => true]))->assertSessionHasErrors('block_id')->assertSessionMissing('_old_input.password');
-        $this->post('/register', array_replace($this->registration(), ['block_id' => 'b0000000-0000-4000-8000-000000000002']))->assertSessionHasErrors('block_id');
-    }
-
-    public function test_empty_block_catalog_disables_registration_with_guidance(): void
-    {
-        $this->classes->shouldReceive('blocks')->andReturn([]);
-        $this->get('/register')->assertOk()->assertSee('No blocks are available yet')->assertSee('disabled', false);
-    }
-
-    public function test_block_outage_preserves_safe_input_without_creating_account(): void
-    {
-        $this->classes->shouldReceive('blocks')->andThrow(new ClassroomUnavailable('Private details'));
-        $this->accounts->shouldNotReceive('create');
-        $this->get('/register')->assertStatus(503)->assertDontSee('Private details');
-        $this->from('/register')->post('/register', $this->registration())->assertRedirect('/register')->assertSessionHasErrors('block_id')
-            ->assertSessionHas('_old_input.block_id', self::BLOCK)->assertSessionMissing('_old_input.password');
+        $this->get('/new-user')->assertOk()->assertSee('New User')->assertSee('Send verification link')
+            ->assertDontSee('name="password"', false)->assertDontSee('name="block_id"', false);
+        $this->get('/register')->assertRedirect('/new-user');
+        $this->post('/register', $this->registration())->assertStatus(405);
     }
 
     public function test_only_admins_can_add_blocks_or_assign_existing_students(): void
@@ -107,13 +84,10 @@ class BlockRegistrationTest extends TestCase
             ->assertSee('Current assignments')->assertSee('Move students to another block');
     }
 
-    public function test_admin_created_students_require_a_valid_block_but_teachers_do_not(): void
+    public function test_admin_creates_teachers_only_and_students_use_csv(): void
     {
-        $this->classes->shouldReceive('blocks')->andReturn([self::BLOCK => 'BSIT 1A']);
-        $this->signIn()->post('/admin/users', array_diff_key($this->registration(), ['block_id' => true]) + ['role' => 'student'])->assertSessionHasErrors('block_id');
-        $this->accounts->shouldReceive('create')->once()->with(Mockery::on(fn ($data) => $data['role'] === 'student' && $data['block_id'] === self::BLOCK), 'admin');
-        $this->post('/admin/users', $this->registration() + ['role' => 'student'])->assertSessionHasNoErrors();
+        $this->signIn()->post('/admin/users', $this->registration() + ['role' => 'student'])->assertSessionHasErrors('role');
         $this->accounts->shouldReceive('create')->once()->with(Mockery::on(fn ($data) => $data['role'] === 'teacher' && ! isset($data['block_id'])), 'admin');
-        $this->post('/admin/users', array_diff_key($this->registration(), ['block_id' => true]) + ['role' => 'teacher'])->assertSessionHasNoErrors();
+        $this->post('/admin/users', $this->registration() + ['role' => 'teacher'])->assertSessionHasNoErrors();
     }
 }

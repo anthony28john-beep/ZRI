@@ -6,6 +6,7 @@
 @import './admin-home.css';
 @import './verify-email.css';
 @import './block-membership.css';
+@import './student-enrollment.css';
 
 :root {
     color-scheme: light;

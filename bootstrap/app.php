@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->dontFlash(['password', 'password_confirmation', 'current_password', 'new_password', 'new_password_confirmation']);
+        $exceptions->dontFlash(['password', 'password_confirmation', 'current_password', 'new_password', 'new_password_confirmation', 'token']);
         $exceptions->dontReport([AccountException::class]);
         $exceptions->render(function (AccountException $exception, Request $request) {
             if ($exception->status === 401 && $request->hasSession()) {

@@ -125,3 +125,11 @@ The container listens on port 80 by default, matching Vercel's default routing p
 - **Firebase service unavailable:** Check the JSON environment value, project/database URLs, and service-account permissions.
 
 Live Vercel deployment and Firebase connectivity must be verified with your own account settings; a successful local build does not configure those external services.
+
+## Student CSV enrollment
+
+Use **Import Students** in the admin menu for CSV files with `Fullname,email,block` (UTF-8, up to 100 rows and 1 MB). Preview and confirm before saving. Students activate using **New User** on the login page. Existing game accounts use normal login after their email is imported.
+
+`APP_URL` must be the correct stable HTTPS production URL, and its hostname must be authorized in Firebase Authentication. Keep Firebase's hosted verification handler: after verifying, students select **Continue** to open the website password setup page. This flow uses the existing Firebase verification emails, not a separate SMTP account. Test this complete email round trip after deployment. Do not use a Preview hostname in production emails.
+
+Redis stores short-lived CSV previews and reports across container instances. Invitations, activation-proof hashes, and one-time completion state are persisted in Realtime Database. Keep the `student_invitations` node inaccessible to public clients. The Unity registration UI and game-side enrollment enforcement must be updated in the separate Unity project.

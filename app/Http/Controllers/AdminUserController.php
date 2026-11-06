@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\AccountException;
-use App\Exceptions\ClassroomUnavailable;
 use App\Services\AdminAccounts;
-use App\Services\Classrooms;
 use App\Services\FirebaseAccounts;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class AdminUserController extends Controller
@@ -53,17 +50,8 @@ class AdminUserController extends Controller
 
     public function create(Request $request)
     {
-        $blocks = [];
-        $blocksUnavailable = false;
-        try {
-            $blocks = app(Classrooms::class)->blocks();
-        } catch (ClassroomUnavailable) {
-            $blocksUnavailable = true;
-        }
-
         return view('admin.create-account', [
             'user' => $request->session()->get('firebase_user'),
-            'blocks' => $blocks, 'blocksUnavailable' => $blocksUnavailable,
         ]);
     }
 
@@ -72,19 +60,9 @@ class AdminUserController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:254'],
-            'role' => ['required', 'in:student,teacher'],
+            'role' => ['required', 'in:teacher'],
             'password' => ['required', 'string', 'max:128', 'confirmed', Password::defaults()],
-            'block_id' => ['required_if:role,student', 'nullable', 'string', 'uuid'],
         ]);
-        if ($validated['role'] === 'student') {
-            try {
-                $request->validate(['block_id' => [Rule::in(array_keys(app(Classrooms::class)->blocks()))]]);
-            } catch (ClassroomUnavailable) {
-                return back()->withInput($request->only('name', 'email', 'role', 'block_id'))->withErrors(['block_id' => 'Blocks are temporarily unavailable. Please try again.']);
-            }
-        } else {
-            unset($validated['block_id']);
-        }
         $accounts->create($validated, $request->user()->uid);
 
         return redirect()->route('admin.users.create')->with('success', ucfirst($validated['role']).' account created successfully! They must change their temporary password at first sign-in.');

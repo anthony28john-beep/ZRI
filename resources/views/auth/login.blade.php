@@ -77,8 +77,8 @@
             <p class="form-link"><a href="{{ route('password.request') }}">Forgot your password?</a></p>
 
             <p class="form-link">
-                Don't have an account?
-                <a href="{{ route('register') }}">Create account</a>
+                First time here?
+                <a href="{{ route('new-user') }}">New User</a>
             </p>
         </section>
     </div>

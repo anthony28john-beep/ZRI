@@ -24,6 +24,9 @@ class ClassroomsTest extends TestCase
     {
         parent::setUp();
         $this->database = Mockery::mock(Database::class);
+        $invitations = Mockery::mock(Reference::class);
+        $invitations->shouldReceive('getValue')->andReturn([]);
+        $this->database->shouldReceive('getReference')->with('student_invitations')->andReturn($invitations)->byDefault();
         $this->classes = new Classrooms($this->database, $this->fullNames());
     }
 
@@ -216,5 +219,16 @@ class ClassroomsTest extends TestCase
         } catch (HttpException $exception) {
             $this->assertSame(404, $exception->getStatusCode());
         }
+    }
+
+    public function test_block_with_pending_csv_invitations_cannot_be_deleted(): void
+    {
+        $this->read('blocks', [self::CLASS_ID => ['name' => 'BSIT 1A']]);
+        $this->read('users', []);
+        $this->read('classes', []);
+        $this->read('student_invitations', ['invitation' => ['status' => 'pending', 'block_id' => self::CLASS_ID]]);
+        $this->database->shouldNotReceive('getReference')->withNoArgs();
+        $this->expectException(ValidationException::class);
+        $this->classes->deleteBlock(self::CLASS_ID);
     }
 }

@@ -4,13 +4,11 @@ namespace App\Services;
 
 use App\Exceptions\AccountException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Kreait\Firebase\Auth\SendActionLink\FailedToSendActionLink;
 use Kreait\Firebase\Auth\SignIn\FailedToSignIn;
 use Kreait\Firebase\Auth\UserRecord;
 use Kreait\Firebase\Contract\Auth;
 use Kreait\Firebase\Contract\Database;
-use Kreait\Firebase\Database\Transaction;
 use Kreait\Firebase\Exception\Auth\EmailExists;
 use Kreait\Firebase\Exception\Auth\EmailNotFound;
 use Kreait\Firebase\Exception\Auth\UserDisabled;
@@ -51,6 +49,9 @@ class FirebaseAccounts
 
     public function create(#[\SensitiveParameter] array $data, ?string $createdBy = null): void
     {
+        if (! $createdBy || ($data['role'] ?? null) !== 'teacher') {
+            throw new AccountException('Import students through CSV. This form creates teacher accounts only.', 'role');
+        }
         $uid = null;
         try {
             $record = $this->auth->createUser([
@@ -60,11 +61,7 @@ class FirebaseAccounts
             $uid = $record->uid;
             $this->database->getReference('users/'.$uid)->set([
                 'uid' => $uid, 'name' => $data['name'], 'fullname' => $data['name'], 'email' => $record->email,
-                'role' => $createdBy ? $data['role'] : 'student',
-                'block_id' => $createdBy && $data['role'] === 'student' ? ($data['block_id'] ?? null) : null,
-                'block_application' => ! $createdBy && ! empty($data['block_id']) ? [
-                    'id' => (string) Str::uuid(), 'block_id' => $data['block_id'], 'requested_at' => now()->toIso8601String(),
-                ] : null,
+                'role' => 'teacher',
                 'created_at' => now()->toIso8601String(), 'created_by' => $createdBy,
                 'must_change_password' => $createdBy !== null,
                 'temporary_password_version' => $createdBy ? $this->passwordVersion($record) : null,
@@ -94,25 +91,10 @@ class FirebaseAccounts
             $reference = $this->database->getReference('users/'.$uid);
             $profile = $reference->getValue();
             if ($profile === null && $repairMissing) {
-                $fullName = $this->names->forProfile($uid, [], '');
-                // Only an authenticated login may repair an orphan. Never overwrite a concurrent profile.
-                $profile = $this->database->runTransaction(function (Transaction $transaction) use ($reference, $record, $fullName) {
-                    $existing = $transaction->snapshot($reference)->getValue();
-                    if ($existing !== null) {
-                        return $existing;
-                    }
-                    $profile = [
-                        'uid' => $record->uid, 'name' => $fullName !== '' ? $fullName : 'Student',
-                        'fullname' => $fullName !== '' ? $fullName : null,
-                        'email' => $record->email, 'role' => 'student',
-                        'created_at' => now()->toIso8601String(),
-                        // A self-registered Firebase user already owns their password.
-                        'must_change_password' => false,
-                    ];
-                    $transaction->set($reference, $profile);
-
-                    return $profile;
-                });
+                $profile = app(StudentEnrollment::class)->admitExisting($uid, $record->email);
+            }
+            if (! empty($profile['activation_required'])) {
+                throw new AccountException('Complete New User activation before signing in.', 'email');
             }
             if (! is_array($profile) || ! in_array($profile['role'] ?? null, ['admin', 'teacher', 'student'], true)) {
                 throw new AccountException('Your account profile is unavailable. Please sign in again or contact an administrator.', status: 401);

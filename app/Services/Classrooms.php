@@ -35,7 +35,10 @@ class Classrooms
         }
         uasort($users, fn ($a, $b) => strcasecmp($a['name'], $b['name']));
 
-        return ['classes' => $this->read('classes'), 'users' => $users, 'blocks' => $this->blocks()];
+        $invitations = array_filter($this->read('student_invitations'), fn ($invite) => ($invite['status'] ?? '') === 'pending');
+
+        return ['classes' => $this->read('classes'), 'users' => $users, 'blocks' => $this->blocks(),
+            'invitation_counts' => array_count_values(array_column($invitations, 'block_id'))];
     }
 
     public function blocks(): array
@@ -87,16 +90,17 @@ class Classrooms
         $classes = count(array_filter($this->read('classes'), fn ($class) => is_array($class) && ($class['block_id'] ?? null) === $id));
 
         $applications = count(array_filter($profiles, fn ($profile) => is_array($profile) && ($profile['role'] ?? null) === 'student' && ($profile['block_application']['block_id'] ?? null) === $id));
+        $invitations = count(array_filter($this->read('student_invitations'), fn ($invite) => ($invite['status'] ?? '') === 'pending' && ($invite['block_id'] ?? null) === $id));
 
-        return ['id' => $id, 'name' => $blocks[$id], 'students' => $students, 'classes' => $classes, 'applications' => $applications];
+        return ['id' => $id, 'name' => $blocks[$id], 'students' => $students, 'classes' => $classes, 'applications' => $applications, 'invitations' => $invitations];
     }
 
     public function deleteBlock(string $id): void
     {
         // Recheck usage on submission, not just when the confirmation page was opened.
         $block = $this->blockDeletionDetails($id);
-        if ($block['students'] > 0 || $block['classes'] > 0 || $block['applications'] > 0) {
-            throw ValidationException::withMessages(['block' => 'This block is still in use. Move its students, resolve pending applications, and update class assignments before deleting it.']);
+        if ($block['students'] > 0 || $block['classes'] > 0 || $block['applications'] > 0 || $block['invitations'] > 0) {
+            throw ValidationException::withMessages(['block' => 'This block is still in use. Move its students, resolve pending applications and imported invitations, and update class assignments before deleting it.']);
         }
         $this->write(['blocks/'.$id => null], 'The block could not be deleted. Please try again.');
     }
