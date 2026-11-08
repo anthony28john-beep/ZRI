@@ -2,7 +2,7 @@
 
 ZeroRiskInitiative is a school capstone project that connects a Unity safety education game with a Laravel web portal. Students can view their game results, teachers can monitor their classes, and administrators can manage accounts, blocks, and teacher assignments.
 
-The website uses a maroon and white theme with dedicated administrator, teacher, and student workspaces.
+The website uses a construction yellow, charcoal, and warm white theme with dedicated administrator, teacher, and student workspaces.
 
 ## Technology stack
 

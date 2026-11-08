@@ -11,12 +11,12 @@
 .scoreboard-page .scoreboard-stat:first-child { border-top-color: var(--color-accent); }
 .scoreboard-page .scoreboard-stat-label { color: var(--color-text); font-size: 12px; font-weight: 600; }
 .scoreboard-page .scoreboard-stat strong { margin: 12px 0 8px; color: var(--color-text); font-size: 34px; font-weight: 650; line-height: 1.15; overflow-wrap: anywhere; }
-.scoreboard-page .scoreboard-stat:first-child strong { color: var(--color-accent); }
+.scoreboard-page .scoreboard-stat:first-child strong { color: var(--color-link); }
 .scoreboard-page .scoreboard-stat-note { color: var(--color-muted); font-size: 11px; line-height: 1.7; }
-.scoreboard-page .scoreboard-results { overflow: hidden; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); box-shadow: 0 16px 40px rgba(74, 18, 35, 0.08); }
+.scoreboard-page .scoreboard-results { overflow: hidden; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); box-shadow: 0 16px 40px rgba(36, 40, 45, 0.08); }
 .scoreboard-page .scoreboard-results-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px; border-bottom: 1px solid var(--color-border); background: var(--color-surface-soft); }
 .scoreboard-page h2 { color: var(--color-text); font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
-.scoreboard-page .scoreboard-refresh { color: var(--color-accent); font-size: 12px; font-weight: 600; line-height: 1.7; }
+.scoreboard-page .scoreboard-refresh { color: var(--color-link); font-size: 12px; font-weight: 600; line-height: 1.7; }
 .scoreboard-page .scoreboard-table-scroll { overflow-x: auto; }
 .scoreboard-page .scoreboard-table-scroll:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
 .scoreboard-page .scoreboard-table { width: 100%; min-width: 750px; border-collapse: collapse; text-align: left; }
@@ -28,10 +28,10 @@
 .scoreboard-page .scoreboard-level-name { display: block; color: var(--color-text); font-size: 14px; font-weight: 600; }
 .scoreboard-page .scoreboard-last-played { display: block; margin-top: 6px; color: var(--color-muted); font-size: 10px; font-weight: 400; }
 .scoreboard-page .scoreboard-table .scoreboard-score { color: var(--color-text); font-size: 17px; font-weight: 600; }
-.scoreboard-page .scoreboard-grade { color: var(--color-accent); font-weight: 650; }
+.scoreboard-page .scoreboard-grade { color: var(--color-link); font-weight: 650; }
 .scoreboard-page .scoreboard-status { display: inline-block; padding: 5px 10px; border: 1px solid var(--color-border); border-radius: 30px; background: var(--color-surface-soft); color: var(--color-muted); font-size: 10px; font-weight: 600; white-space: nowrap; }
 .scoreboard-page .scoreboard-status.is-completed { border-color: var(--color-success-border); background: var(--color-success-soft); color: var(--color-success); }
-.scoreboard-page .scoreboard-status.is-progress { border-color: var(--color-border); background: var(--color-surface-soft); color: var(--color-accent); }
+.scoreboard-page .scoreboard-status.is-progress { border-color: var(--color-border); background: var(--color-surface-soft); color: var(--color-link); }
 .scoreboard-page .scoreboard-footnote { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 17px 24px; border-top: 1px solid var(--color-border); color: var(--color-muted); font-size: 11px; line-height: 1.7; }
 .scoreboard-page .scoreboard-empty { margin: 20px 24px; padding: 18px; border: 1px dashed var(--color-border); border-radius: 8px; color: var(--color-muted); text-align: center; font-size: 14px; line-height: 1.7; }
 .scoreboard-page .scoreboard-unavailable { padding: 32px; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface); }

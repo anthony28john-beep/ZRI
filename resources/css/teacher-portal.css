@@ -1,11 +1,11 @@
 .tp-shell { width: min(1180px, 100%); margin: 0 auto; padding: 44px 28px 64px; }
 .tp-manage-classes { grid-column: 1 / -1; width: auto; text-decoration: none; text-align: center; }
 .tp-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 18px 0 30px; }
-.tp-eyebrow { display: block; color: var(--color-accent); font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
+.tp-eyebrow { display: block; color: var(--color-link); font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
 .tp-heading h1 { font-size: clamp(26px, 3.5vw, 38px); letter-spacing: -1px; margin-bottom: 12px; }
 .tp-heading p, .tp-empty p { color: var(--color-muted); line-height: 1.7; max-width: 650px; }
-.tp-tag { display: inline-flex; padding: 8px 12px; border: 1px solid var(--color-border); background: var(--color-surface-soft); color: var(--color-accent); border-radius: 30px; font-size: 12px; white-space: nowrap; }
-.tp-panel { background: linear-gradient(130deg, var(--color-surface-soft), var(--color-surface)); border: 1px solid var(--color-border); border-radius: 18px; padding: 28px; margin-bottom: 24px; box-shadow: 0 15px 35px rgba(74, 18, 35, 0.08); }
+.tp-tag { display: inline-flex; padding: 8px 12px; border: 1px solid var(--color-border); background: var(--color-surface-soft); color: var(--color-link); border-radius: 30px; font-size: 12px; white-space: nowrap; }
+.tp-panel { background: linear-gradient(130deg, var(--color-surface-soft), var(--color-surface)); border: 1px solid var(--color-border); border-radius: 18px; padding: 28px; margin-bottom: 24px; box-shadow: 0 15px 35px rgba(36, 40, 45, 0.08); }
 .tp-panel h2, .tp-section-heading h2 { font-size: 20px; }
 .tp-toolbar { display: flex; align-items: end; flex-wrap: wrap; gap: 16px; padding: 22px; margin-bottom: 24px; border: 1px solid var(--color-border); border-radius: 14px; background: var(--color-surface-soft); }
 .tp-toolbar > div { flex: 1; min-width: 180px; }
@@ -20,7 +20,7 @@
 .tp-stat strong { font-size: 38px; line-height: 1; }
 .tp-stat small, .tp-caption, .tp-footnote { color: var(--color-muted); font-size: 12px; line-height: 1.7; }
 .tp-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px; }
-.tp-link { color: var(--color-accent); font-size: 13px; text-decoration: none; }
+.tp-link { color: var(--color-link); font-size: 13px; text-decoration: none; }
 .tp-link:hover { color: var(--color-text); text-decoration: underline; }
 .tp-table-wrap { overflow-x: auto; }
 .tp-table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -31,21 +31,21 @@
 .tp-table tr:last-child td { border-bottom: 0; }
 .tp-status { display: inline-block; color: var(--color-muted); background: var(--color-surface-soft); border-radius: 6px; padding: 6px 9px; font-size: 11px; }
 .tp-complete { color: var(--color-success); background: var(--color-success-soft); }
-.tp-table .tp-score { font-size: 20px; font-weight: 700; color: var(--color-accent); }
+.tp-table .tp-score { font-size: 20px; font-weight: 700; color: var(--color-link); }
 .tp-leaderboard { max-width: 800px; }
 .tp-global-leaderboards { margin-top: 36px; }
 .tp-leaderboard th:last-child, .tp-leaderboard td:last-child { text-align: right; }
 .tp-empty { padding: 48px 28px; text-align: center; }
 .tp-empty p { margin: 16px auto 24px; }
-.tp-step { display: block; color: var(--color-accent); font-size: 40px; font-weight: 700; margin-bottom: 18px; }
-.tp-notice { background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 10px; padding: 16px; margin-bottom: 24px; color: var(--color-accent); font-size: 13px; line-height: 1.7; }
+.tp-step { display: block; color: var(--color-link); font-size: 40px; font-weight: 700; margin-bottom: 18px; }
+.tp-notice { background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 10px; padding: 16px; margin-bottom: 24px; color: var(--color-link); font-size: 13px; line-height: 1.7; }
 .tp-footnote { margin-top: 24px; }
 .tp-class-form summary { cursor: pointer; font-size: 18px; font-weight: 700; }
 .tp-assignment-form { margin-top: 24px; }
 .tp-block-form { margin-top: 22px; }
 .tp-block-tags { display: flex; flex-wrap: wrap; gap: 10px; }
 .cm-section-title { display: flex; align-items: center; gap: 14px; }
-.cm-number { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 38px; color: var(--color-accent); background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 10px; font-size: 16px; font-weight: 700; }
+.cm-number { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 38px; color: var(--color-link); background: var(--color-surface-soft); border: 1px solid var(--color-border); border-radius: 10px; font-size: 16px; font-weight: 700; }
 .cm-section-title .tp-caption { margin-top: 5px; }
 .cm-page .tp-block-form { padding: 16px; box-shadow: none; }
 .cm-help { margin-top: 16px; }

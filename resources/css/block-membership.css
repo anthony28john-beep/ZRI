@@ -4,9 +4,9 @@
 .student-block-description, .student-block-current p, .student-block-pending p { color: var(--color-muted); font-size: 13px; line-height: 1.8; }
 .student-block-current { padding: 20px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface-soft); }
 .student-block-current > span { display: block; color: var(--color-muted); font-size: 11px; margin-bottom: 8px; }
-.student-block-current > strong { display: block; font-size: 22px; color: var(--color-accent); margin-bottom: 10px; }
+.student-block-current > strong { display: block; font-size: 22px; color: var(--color-link); margin-bottom: 10px; }
 .student-block-leave { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--color-border); }
-.student-block-leave summary { color: var(--color-accent); cursor: pointer; font-size: 13px; }
+.student-block-leave summary { color: var(--color-link); cursor: pointer; font-size: 13px; }
 .account-page .student-block-card .student-block-check { display: flex; align-items: start; gap: 12px; margin-bottom: 18px; color: var(--color-muted); font-size: 12px; line-height: 1.7; }
 .account-page .student-block-check input { width: 17px; height: 17px; min-height: 17px; margin-top: 3px; flex-shrink: 0; accent-color: var(--color-accent); }
 .student-block-card .button { width: auto; padding: 12px 18px; font-size: 13px; }
@@ -20,7 +20,7 @@
 .block-review-actions form { margin: 0; }
 .tp-shell .block-review-actions .button { min-height: 36px; padding: 8px 14px; font-size: 12px; }
 .block-registration-hint { color: var(--color-muted); font-size: 12px; line-height: 1.7; margin-top: 10px; }
-.tp-table .tp-remove-student { color: var(--color-secondary); }
+.tp-table .tp-remove-student { color: var(--color-link); }
 .tp-removal-panel { max-width: 720px; }
 .tp-removal-panel > .tp-caption { margin: 8px 0 24px; }
 .tp-assignment-form .tp-removal-check { display: flex; align-items: start; gap: 12px; line-height: 1.7; }
