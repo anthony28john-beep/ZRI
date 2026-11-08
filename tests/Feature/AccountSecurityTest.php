@@ -67,7 +67,9 @@ class AccountSecurityTest extends TestCase
             ->assertSeeInOrder(['Home', 'Download Game', 'About the Game', 'Scoreboard', 'Account Information', 'Log Out'])
             ->assertSee('class="portal-logout"', false)->assertDontSee('class="logout-form"', false);
         $game = $this->get('/student/play-game')->assertOk();
-        $this->assertMatchesRegularExpression('/<main[^>]*aria-label="Download Game"[^>]*>\s*<\/main>/', $game->getContent());
+        $game->assertSee('Open download folder')->assertSee('Get ready in three steps')
+            ->assertSee('href="'.e(config('student_dashboard.download_url')).'"', false)
+            ->assertSee('target="_blank" rel="noopener noreferrer"', false);
         $this->get('/student/about-game')->assertOk()->assertSee('hazard-identification')->assertSee('images/student/about1.png');
         $scores = Mockery::mock(FirestoreScoreboard::class);
         $scores->shouldReceive('forPlayer')->once()->with('review-user')->andReturn([

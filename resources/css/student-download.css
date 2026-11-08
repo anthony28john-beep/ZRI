@@ -1,0 +1,44 @@
+.download-page { font-family: 'Segoe UI', Arial, sans-serif; }
+.download-page .student-content { max-width: 1180px; padding: 48px 24px 64px; }
+.download-heading { margin-bottom: 28px; }
+.download-heading .brand-badge { margin-bottom: 14px; border-radius: 6px; font-size: 10px; letter-spacing: 1.6px; }
+.download-heading h1 { margin-bottom: 12px; font-size: clamp(30px, 4vw, 42px); letter-spacing: -1.2px; }
+.download-heading > p { color: var(--color-muted); font-size: 15px; line-height: 1.7; }
+.download-card { display: grid; grid-template-columns: .85fr 1.15fr; overflow: hidden; border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-surface); box-shadow: 0 16px 42px rgba(36, 40, 45, .07); }
+.download-art { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 26px; padding: 40px; color: var(--color-nav-text); background: linear-gradient(145deg, var(--color-nav-background), var(--color-nav-hover)); }
+.download-art::after { content: ''; position: absolute; inset: auto 0 0; height: 7px; background: repeating-linear-gradient(130deg, var(--color-accent) 0 14px, var(--color-nav-background) 14px 28px); }
+.download-art-label { color: var(--color-on-dark); font-size: 10px; font-weight: 700; letter-spacing: 2px; }
+.download-art-icon { display: grid; place-items: center; width: 86px; height: 86px; border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent); border-radius: 22px; color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.download-art-icon svg { width: 56px; height: 56px; }
+.download-art strong { font-size: clamp(28px, 3vw, 38px); line-height: 1.25; letter-spacing: -1px; }
+.download-art strong span { color: var(--color-accent); }
+.download-art-caption { color: var(--color-on-dark); font-size: 9px; letter-spacing: 1.5px; line-height: 1.7; }
+.download-details { min-width: 0; padding: 46px 40px; align-self: center; }
+.download-provider { color: var(--color-link); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.download-details h2 { margin: 14px 0; font-size: clamp(24px, 3vw, 30px); line-height: 1.25; letter-spacing: -.8px; }
+.download-details > p { color: var(--color-muted); font-size: 14px; line-height: 1.8; }
+.download-details .download-button { display: inline-flex; justify-content: center; align-items: center; gap: 12px; width: auto; margin-top: 28px; padding: 15px 22px; text-decoration: none; font-size: 14px; }
+.download-external { margin-left: 12px; font-size: 20px; }
+.download-details .download-caption { margin-top: 10px; font-size: 12px; }
+.download-about { display: inline-flex; align-items: center; gap: 16px; margin-top: 24px; font-size: 13px; font-weight: 600; }
+.download-start { margin-top: 36px; padding: 28px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); }
+.download-start > h2 { margin-bottom: 24px; font-size: 20px; letter-spacing: -.4px; }
+.download-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; list-style: none; }
+.download-steps li { display: flex; align-items: flex-start; gap: 14px; min-width: 0; }
+.download-step-number { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-link); background: var(--color-surface-soft); font-size: 11px; font-weight: 700; }
+.download-steps h3 { margin: 5px 0 9px; font-size: 14px; }
+.download-steps p { color: var(--color-muted); font-size: 12px; line-height: 1.8; }
+.download-help { margin-top: 22px; color: var(--color-muted); font-size: 12px; text-align: center; line-height: 1.7; }
+.download-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 760px) {
+    .download-card { grid-template-columns: minmax(0, 1fr); }
+    .download-art { padding: 30px; gap: 20px; }
+    .download-details { padding: 30px; }
+    .download-steps { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+}
+@media (max-width: 480px) {
+    .download-page .student-content { padding: 32px 16px 40px; }
+    .download-art, .download-details, .download-start { padding: 24px; }
+    .download-details .download-button { width: 100%; gap: 9px; padding-inline: 14px; }
+    .download-external { margin-left: 0; }
+}
