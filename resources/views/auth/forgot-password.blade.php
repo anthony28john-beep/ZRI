@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Reset Password | ZeroRiskInitiative')
 @section('content')
-<main class="page">
+<main class="page auth-background">
     <section class="dashboard-card recovery-card">
         <div class="brand-badge">ACCOUNT RECOVERY</div>
         <h1>Forgot your password?</h1>

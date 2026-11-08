@@ -3,7 +3,7 @@
 @section('title', 'Login | ZeroRiskInitiative')
 
 @section('content')
-<div class="page">
+<div class="page auth-background">
     <div class="auth-container">
         <section class="brand-panel">
             <div class="brand-badge">ZERO RISK SYSTEM</div>

@@ -1,0 +1,14 @@
+.page.auth-background {
+    min-height: 100svh;
+    background-color: var(--color-nav-background);
+    background-image:
+        linear-gradient(135deg, rgba(24, 28, 32, .76), rgba(24, 28, 32, .48)),
+        url('../images/auth-background.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.auth-background :is(.auth-container, .recovery-card) {
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .32);
+}

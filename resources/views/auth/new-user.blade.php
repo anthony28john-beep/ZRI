@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'New User | ZeroRiskInitiative')
 @section('content')
-<div class="page"><div class="auth-container">
+<div class="page auth-background"><div class="auth-container">
     <section class="brand-panel">
         <div class="brand-badge">YOUR LEARNING STARTS HERE</div>
         <h1>ZeroRisk<span>Initiative</span></h1>

@@ -7,6 +7,7 @@
 @import './verify-email.css';
 @import './block-membership.css';
 @import './student-enrollment.css';
+@import './auth-background.css';
 
 :root {
     color-scheme: light;
