@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminClassroomController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlockMembershipController;
+use App\Http\Controllers\PendingStudentActivationController;
 use App\Http\Controllers\StudentAccountController;
 use App\Http\Controllers\StudentActivationController;
 use App\Http\Controllers\StudentImportController;
@@ -39,13 +40,9 @@ Route::middleware('no.cache')->group(function () {
             Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
             Route::post('/admin/users', [AdminUserController::class, 'store'])->middleware(['role:admin', 'throttle:account'])->name('admin.users.store');
             Route::middleware('role:admin')->group(function () {
-                Route::get('/admin/students/import', [StudentImportController::class, 'index'])->name('admin.students.import');
-                Route::get('/admin/students/template', [StudentImportController::class, 'template'])->name('admin.students.template');
-                Route::post('/admin/students/import/preview', [StudentImportController::class, 'preview'])->middleware('throttle:account')->name('admin.students.import.preview');
-                Route::get('/admin/students/import/{preview}', [StudentImportController::class, 'show'])->whereUuid('preview')->name('admin.students.import.show');
-                Route::get('/admin/students/import/{preview}/report', [StudentImportController::class, 'report'])->whereUuid('preview')->name('admin.students.import.report');
-                Route::post('/admin/students/import/{preview}', [StudentImportController::class, 'store'])->whereUuid('preview')->middleware('throttle:account')->name('admin.students.import.store');
-                Route::delete('/admin/students/invitations/{invitation}', [StudentImportController::class, 'revoke'])->where('invitation', '[a-f0-9]{64}')->middleware('throttle:account')->name('admin.students.invitation.destroy');
+                Route::get('/admin/students/activations', [PendingStudentActivationController::class, 'index'])->name('admin.students.activations');
+                Route::get('/admin/students/import', fn () => redirect()->route('admin.students.activations'));
+                Route::delete('/admin/students/invitations/{invitation}', [PendingStudentActivationController::class, 'destroy'])->where('invitation', '[a-f0-9]{64}')->middleware('throttle:account')->name('admin.students.invitation.destroy');
                 Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
                 Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.users.create');
                 Route::get('/admin/users/{uid}/delete', [AdminUserController::class, 'confirmDeletion'])->name('admin.users.delete');
@@ -74,6 +71,12 @@ Route::middleware('no.cache')->group(function () {
         });
         Route::middleware('role:teacher')->group(function () {
             Route::middleware('account.ready')->group(function () {
+                Route::get('/teacher/students/import', [StudentImportController::class, 'index'])->name('teacher.students.import');
+                Route::get('/teacher/students/template', [StudentImportController::class, 'template'])->name('teacher.students.template');
+                Route::post('/teacher/students/import/preview', [StudentImportController::class, 'preview'])->middleware('throttle:account')->name('teacher.students.import.preview');
+                Route::get('/teacher/students/import/{preview}', [StudentImportController::class, 'show'])->whereUuid('preview')->name('teacher.students.import.show');
+                Route::get('/teacher/students/import/{preview}/report', [StudentImportController::class, 'report'])->whereUuid('preview')->name('teacher.students.import.report');
+                Route::post('/teacher/students/import/{preview}', [StudentImportController::class, 'store'])->whereUuid('preview')->middleware('throttle:account')->name('teacher.students.import.store');
                 Route::get('/teacher/applications', [BlockMembershipController::class, 'applications'])->name('teacher.applications');
                 Route::get('/teacher/classes/{classroom}/students/{student}/remove', [BlockMembershipController::class, 'confirmRemoval'])->whereUuid('classroom')->name('teacher.students.remove');
                 Route::delete('/teacher/classes/{classroom}/students/{student}', [BlockMembershipController::class, 'removeStudent'])->whereUuid('classroom')->middleware('throttle:account')->name('teacher.students.destroy');

@@ -23,27 +23,54 @@ class StudentEnrollmentTest extends TestCase
         $this->data['users']['teacher'] = ['role' => 'teacher', 'email' => 'teacher@example.com'];
         $this->data['users']['student'] = ['role' => 'student', 'email' => 'student@example.com', 'block_id' => 'other'];
         $report = $this->enrollment->import([$this->row(), $this->row(['email' => 'teacher@example.com']),
-            $this->row(['email' => 'student@example.com']), $this->row(['block' => 'Unknown'])], 'admin');
+            $this->row(['email' => 'student@example.com']), $this->row(['block' => 'Unknown'])], 'teacher');
         $this->assertSame(['imported', 'error', 'skipped', 'error'], array_column($report, 'status'));
-        $this->assertSame('skipped', $this->enrollment->import([$this->row()], 'admin')[0]['status']);
+        $this->assertSame('skipped', $this->enrollment->import([$this->row()], 'teacher')[0]['status']);
         $this->assertCount(1, $this->data['student_invitations']);
         $this->assertSame('other', $this->data['users']['student']['block_id']);
         $this->assertSame(['scores' => 99], $this->data['unrelated']);
-        $this->assertSame('ready', $this->enrollment->preview([$this->row(['email' => 'new@example.com', 'block' => 'bsce 2 a'])])[0]['status']);
+        $this->assertSame('ready', $this->enrollment->preview([$this->row(['email' => 'new@example.com', 'block' => 'bsce 2 a'])], 'teacher')[0]['status']);
         unset($this->data['blocks']['block-a']);
-        $this->assertSame('error', $this->enrollment->import([$this->row(['email' => 'new@example.com'])], 'admin')[0]['status']);
+        $this->assertSame('error', $this->enrollment->import([$this->row(['email' => 'new@example.com'])], 'teacher')[0]['status']);
     }
 
-    public function test_import_rechecks_live_administrator_role(): void
+    public function test_import_rechecks_live_teacher_role(): void
     {
-        $this->data['users']['admin']['role'] = 'teacher';
+        $this->data['users']['teacher']['role'] = 'student';
+        $this->expectException(HttpException::class);
+        $this->enrollment->import([$this->row()], 'teacher');
+    }
+
+    public function test_teacher_can_only_preview_and_import_students_into_owned_blocks(): void
+    {
+        $this->data['users']['other-teacher'] = ['role' => 'teacher'];
+        $this->data['blocks']['block-b'] = ['name' => 'BSCE 2 B'];
+        $this->data['classes']['class-b'] = ['teacher_uid' => 'other-teacher', 'block_id' => 'block-b'];
+        $rows = [$this->row(), $this->row(['email' => 'other@example.com', 'block' => 'BSCE 2 B'])];
+        $this->assertSame(['block-a' => 'BSCE 2 A'], $this->enrollment->blocksForTeacher('teacher'));
+        $this->assertSame(['ready', 'error'], array_column($this->enrollment->preview($rows, 'teacher'), 'status'));
+        $this->assertSame(['imported', 'error'], array_column($this->enrollment->import($rows, 'teacher'), 'status'));
+        $this->assertSame('teacher', $this->enrollment->invitation('juan@example.com')['created_by']);
+        $this->assertNull($this->enrollment->invitation('other@example.com'));
+    }
+
+    public function test_reassigned_block_is_rejected_when_an_old_preview_is_submitted(): void
+    {
+        $this->assertSame('ready', $this->enrollment->preview([$this->row()], 'teacher')[0]['status']);
+        $this->data['classes']['class-a']['teacher_uid'] = 'other-teacher';
+        $this->assertSame('error', $this->enrollment->import([$this->row()], 'teacher')[0]['status']);
+        $this->assertArrayNotHasKey('student_invitations', $this->data);
+    }
+
+    public function test_admin_cannot_use_the_import_service(): void
+    {
         $this->expectException(HttpException::class);
         $this->enrollment->import([$this->row()], 'admin');
     }
 
     public function test_issued_proof_is_hashed_expires_and_is_consumed_after_activation(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('JUAN@example.com');
         $token = str_repeat('a', 64);
         $this->enrollment->issue('juan@example.com', $invite['revision'], $invite['candidate_uid'], $token);
@@ -64,7 +91,7 @@ class StudentEnrollmentTest extends TestCase
 
     public function test_bad_or_expired_proof_cannot_reserve_a_password_change(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $this->enrollment->issue('juan@example.com', $invite['revision'], $invite['candidate_uid'], str_repeat('a', 64));
         foreach ([str_repeat('b', 64), str_repeat('a', 64)] as $token) {
@@ -75,14 +102,14 @@ class StudentEnrollmentTest extends TestCase
                 $this->enrollment->reserve('juan@example.com', $token);
                 $this->fail('Invalid proof accepted.');
             } catch (AccountException) {
-                $this->assertCount(1, $this->data['users']);
+                $this->assertCount(2, $this->data['users']);
             }
         }
     }
 
     public function test_resend_replaces_proof_and_concurrent_password_updates_are_blocked(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $this->enrollment->issue('juan@example.com', $invite['revision'], $invite['candidate_uid'], str_repeat('a', 64));
         $this->enrollment->issue('juan@example.com', $invite['revision'], $invite['candidate_uid'], str_repeat('b', 64));
@@ -99,7 +126,7 @@ class StudentEnrollmentTest extends TestCase
 
     public function test_existing_unity_account_keeps_uid_and_only_imported_students_can_get_a_profile(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $profile = $this->enrollment->admitExisting('unity-uid', 'juan@example.com');
         $this->assertSame('unity-uid', $profile['uid']);
         $this->assertSame('block-a', $profile['block_application']['block_id']);
@@ -110,7 +137,7 @@ class StudentEnrollmentTest extends TestCase
 
     public function test_candidate_account_cannot_bypass_activation_by_resetting_its_password(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $this->enrollment->issue('juan@example.com', $invite['revision'], $invite['candidate_uid'], str_repeat('a', 64));
         $this->expectException(AccountException::class);
@@ -119,11 +146,11 @@ class StudentEnrollmentTest extends TestCase
 
     public function test_correction_invalidates_old_activation_and_preserves_a_concurrent_profile(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $this->enrollment->issue('juan@example.com', $invite['revision'], $invite['candidate_uid'], str_repeat('a', 64));
         $this->enrollment->revoke(StudentEnrollment::key('juan@example.com'), 'admin');
-        $this->enrollment->import([$this->row(['fullname' => 'Correct Name'])], 'admin');
+        $this->enrollment->import([$this->row(['fullname' => 'Correct Name'])], 'teacher');
         try {
             $this->enrollment->proof('juan@example.com', str_repeat('a', 64));
             $this->fail('Revoked proof accepted.');

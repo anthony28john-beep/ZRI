@@ -37,7 +37,7 @@ class AdminNavigationTest extends TestCase
     {
         $this->signIn()->get('/dashboard')->assertOk()->assertSee('Admin User')
             ->assertSeeInOrder(['Home', 'Create Account', 'Manage Classes', 'Log Out'])
-            ->assertSee('Build your classroom in three steps')->assertSee('Blocks available for student enrollment')->assertSee('Import Students')
+            ->assertSee('Build your classroom in three steps')->assertSee('Blocks available for student enrollment')->assertSee('Pending Activations')
             ->assertSee('href="'.route('dashboard').'" class="admin-nav-link is-active"', false)
             ->assertSee('href="'.route('admin.users.create').'"', false)
             ->assertDontSee('name="password_confirmation"', false);
@@ -45,7 +45,7 @@ class AdminNavigationTest extends TestCase
 
     public function test_create_account_page_keeps_account_fields_and_highlights_its_navigation(): void
     {
-        $this->signIn()->get('/admin/users/create')->assertOk()->assertSee('Add New Account')->assertSee('Import Students')
+        $this->signIn()->get('/admin/users/create')->assertOk()->assertSee('Add New Account')->assertSee('Pending Activations')
             ->assertSee('name="name"', false)->assertSee('name="email"', false)->assertSee('name="role"', false)
             ->assertDontSee('name="block_id"', false)->assertDontSee('value="student"', false)->assertSee('name="password"', false)->assertSee('name="password_confirmation"', false)
             ->assertSee('action="'.route('admin.users.store').'"', false)

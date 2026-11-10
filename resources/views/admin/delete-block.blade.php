@@ -11,7 +11,7 @@
             @if ($block['students'] || $block['classes'] || ($block['applications'] ?? 0) || ($block['invitations'] ?? 0))
                 <h2>This block is still in use</h2>
                 <p class="tp-caption">{{ $block['students'] }} students &middot; {{ $block['classes'] }} class assignments &middot; {{ $block['applications'] ?? 0 }} pending applications &middot; {{ $block['invitations'] ?? 0 }} imported invitations</p>
-                <div class="tp-notice">Move its students, resolve pending applications, remove pending invitations through Import Students, and change its class assignments first. Accounts and classes will not be deleted.</div>
+                <div class="tp-notice">Move its students, resolve pending applications, remove pending invitations through Pending Activations, and change its class assignments first. Accounts and classes will not be deleted.</div>
                 <a class="button" href="{{ route('admin.classes') }}">Go back and update assignments</a>
             @else
                 <h2>{{ $block['name'] }}</h2>

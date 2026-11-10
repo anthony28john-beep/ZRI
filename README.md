@@ -20,8 +20,8 @@ Students, teachers, and administrators can switch dark mode on or off from the a
 | Workspace | Features |
 | --- | --- |
 | Student | Home, About the Game, personal scoreboard, level leaderboards, account information, and block applications |
-| Teacher | Class overview, student rosters, individual results, level progress, leaderboards, application review, and student removal |
-| Administrator | Student CSV import and activation invitations, teacher account creation, account deletion, block management, and teacher assignments |
+| Teacher | Student CSV import for assigned blocks, class overview, student rosters, individual results, level progress, leaderboards, application review, and student removal |
+| Administrator | Pending student activations, teacher account creation, account deletion, block management, and teacher assignments |
 
 Accounts support email verification, password recovery, and email/password updates. Administrator-created accounts require replacement of their temporary password.
 
@@ -83,14 +83,14 @@ Sign in and complete email verification. The command assigns administrator acces
 
 ## Accounts and verification
 
-Student enrollment is controlled by administrator CSV imports. The public login page offers **New User** instead of open registration. Teacher accounts are created separately with temporary passwords.
+Student enrollment is controlled by teacher CSV imports into their assigned blocks. Administrators monitor pending student activations and can remove pending invitations for correction. The public login page offers **New User** instead of open registration. Teacher accounts are created separately with temporary passwords.
 
 ### Import students
 
 1. Create blocks in **Manage Classes** and assign their teachers.
-2. Open **Import Students**, download the template, and prepare a UTF-8 CSV with exactly `Fullname,email,block`. Column order and header capitalization may vary; quoted names containing commas are supported.
+2. The assigned teacher opens **Import Students**, downloads the template, and prepares a UTF-8 CSV with exactly `Fullname,email,block`. Only the teacher's currently assigned blocks can be imported; ownership is checked again on submission. Column order and header capitalization may vary; quoted names containing commas are supported.
 3. Upload up to 100 students per file (1 MB maximum). Preview names, emails, and matching blocks, then confirm the import. Duplicate emails within the file, missing fields, unknown blocks, and non-student accounts are flagged. Existing website students are skipped without changing credentials, names, membership, or scores.
-4. Download the import report and correct failed rows before uploading again. Reimporting does not create duplicate invitations. To correct a pending invitation, remove it on the import page and import its corrected row.
+4. The teacher downloads the import report and corrects failed rows before uploading again. Reimporting does not create duplicate invitations. To correct a pending invitation, the administrator removes it through **Pending Activations**, then the assigned teacher imports the corrected row.
 5. Students choose **New User**, enter the imported email, open the Firebase verification email, and select **Continue** after verification. Only then can they set a password. The emailed activation proof expires after one hour; password setup sessions last 15 minutes. A resend replaces the previous activation proof.
 6. Students sign in using that email/password on the website and game. Their imported block becomes an application requiring teacher acceptance; import does not directly approve membership.
 

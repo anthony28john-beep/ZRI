@@ -47,6 +47,7 @@
             ['route' => 'progress', 'number' => '02', 'label' => 'LEARNING JOURNEY', 'title' => 'Follow their progress', 'description' => 'See scores, attempts, and level completion to understand where help is needed.', 'action' => 'View progress'],
             ['route' => 'leaderboard', 'number' => '03', 'label' => 'CELEBRATE ACHIEVEMENT', 'title' => 'Explore the leaderboard', 'description' => 'Recognize high scores in your class and across the student community.', 'action' => 'View leaderboard'],
             ['route' => 'applications', 'number' => '04', 'label' => 'GROW YOUR CLASSROOM', 'title' => 'Welcome new learners', 'description' => 'Accept or decline students applying to the blocks assigned to you.', 'action' => 'Review applications'],
+            ['route' => 'students.import', 'number' => '05', 'label' => 'STUDENT ENROLLMENT', 'title' => 'Import your student list', 'description' => 'Upload Fullname, email, and block for students in your assigned blocks.', 'action' => 'Import students'],
         ] as $tool)
             <a class="th-tool {{ $tool['route'] === 'applications' ? 'th-tool-orange' : '' }}" href="{{ route('teacher.'.$tool['route'], $tool['route'] === 'applications' ? [] : $classQuery) }}">
                 <span class="th-tool-number" aria-hidden="true">{{ $tool['number'] }}</span>

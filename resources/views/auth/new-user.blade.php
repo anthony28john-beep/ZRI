@@ -9,7 +9,7 @@
         <ol class="activation-steps"><li>Enter your imported email</li><li>Verify your email and select Continue</li><li>Set your password and sign in</li></ol>
     </section>
     <section class="form-panel">
-        <h2>New User</h2><p class="subtitle">Enter the email address provided to your administrator.</p>
+        <h2>New User</h2><p class="subtitle">Enter the email address your teacher included in the student list.</p>
         @include('partials.messages')
         <form method="POST" action="{{ route('new-user.send') }}">
             @csrf
@@ -18,7 +18,7 @@
         </form>
         <p class="form-link">Check your inbox and spam folder. You can request another link after one minute. Each link expires after one hour.</p>
         <p class="form-link">Already registered in the game or website? <a href="{{ route('login') }}">Sign in</a> or <a href="{{ route('password.request') }}">reset your password</a>.</p>
-        <p class="form-link">Not on the student list? Ask your administrator to import your details.</p>
+        <p class="form-link">Not on the student list? Ask your teacher to import your details.</p>
     </section>
 </div></div>
 @endsection

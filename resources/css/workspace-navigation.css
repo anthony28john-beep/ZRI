@@ -34,7 +34,7 @@
 .workspace-navbar :is(a, summary, button):focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 .workspace-account[open] .navigation-chevron { transform: rotate(180deg); }
 .workspace-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 20px; color: var(--color-on-accent); background: var(--color-accent); font-size: 10px; font-weight: 750; }
-@media (max-width: 1199px) {
+@media (max-width: 1359px) {
     .workspace-navbar-inner { gap: 16px; min-height: 78px; padding: 12px 24px; }
     .workspace-navbar .workspace-desktop-links { display: none; }
     .workspace-navbar .workspace-mobile-menu { position: relative; display: block; margin-left: auto; justify-self: auto; }

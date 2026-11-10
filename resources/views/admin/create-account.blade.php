@@ -13,7 +13,7 @@
             <div class="admin-eyebrow">PEOPLE &amp; ACCESS</div>
             <h1>Create a teacher account</h1>
             <p class="admin-description">
-                Add teachers here. For students, import your CSV list and let them activate their own accounts.
+                Add teachers here. Assigned teachers import their student lists, and students activate their own accounts.
             </p>
         </div>
 
@@ -54,8 +54,8 @@
                     <h2 id="account-types-heading">Account types</h2>
                     <div class="admin-guide-item">
                         <div class="admin-guide-role"><span aria-hidden="true"></span>Student</div>
-                        <p>Import Fullname, email, and block. Students verify their email before setting a password.</p>
-                        <a class="tp-link" href="{{ route('admin.students.import') }}">Import Students &rarr;</a>
+                        <p>Teachers import their student lists. Monitor pending activations while students verify their email and set a password.</p>
+                        <a class="tp-link" href="{{ route('admin.students.activations') }}">Pending Activations &rarr;</a>
                     </div>
                     <div class="admin-guide-item">
                         <div class="admin-guide-role"><span aria-hidden="true"></span>Teacher</div>

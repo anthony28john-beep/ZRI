@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Services\FirebaseAccounts;
+use App\Services\StudentEnrollment;
 use Illuminate\Http\UploadedFile;
 use Kreait\Firebase\Auth\SendActionLink\FailedToSendActionLink;
 use Kreait\Firebase\Auth\UserRecord;
@@ -26,14 +27,14 @@ class StudentEnrollmentFlowTest extends TestCase
         $this->enrollmentDatabase();
         $this->auth = Mockery::mock(Auth::class);
         $this->app->instance(Auth::class, $this->auth);
-        $this->identity = ['uid' => 'admin', 'name' => 'Admin', 'email' => 'admin@example.com', 'role' => 'admin',
+        $this->identity = ['uid' => 'teacher', 'name' => 'Teacher', 'email' => 'teacher@example.com', 'role' => 'teacher',
             'email_verified' => true, 'must_change_password' => false, 'credential_version' => 'v1'];
         $accounts = Mockery::mock(FirebaseAccounts::class);
         $accounts->shouldReceive('identity')->andReturnUsing(fn () => $this->identity);
         $this->app->instance(FirebaseAccounts::class, $accounts);
     }
 
-    private function signIn(string $role = 'admin'): static
+    private function signIn(string $role = 'teacher'): static
     {
         $this->identity['role'] = $role;
 
@@ -47,10 +48,10 @@ class StudentEnrollmentFlowTest extends TestCase
 
     public function test_import_preview_confirmation_and_repeat_import_preserve_accounts(): void
     {
-        $this->signIn()->get('/admin/students/import')->assertOk()->assertSee('Fullname,email,block');
-        $this->get('/admin/students/template')->assertOk()->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+        $this->signIn()->get('/teacher/students/import')->assertOk()->assertSee('Fullname,email,block');
+        $this->get('/teacher/students/template')->assertOk()->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
         $file = UploadedFile::fake()->createWithContent('students.csv', "Fullname,email,block\nJuan Dela Cruz,juan@example.com,BSCE 2 A\nInvalid,bad-email,BSCE 2 A\n");
-        $response = $this->post('/admin/students/import/preview', ['csv' => $file])->assertRedirect();
+        $response = $this->post('/teacher/students/import/preview', ['csv' => $file])->assertRedirect();
         $preview = $response->headers->get('Location');
         $this->assertArrayNotHasKey('student_invitations', $this->data);
         $this->get($preview)->assertOk()->assertSee('Juan Dela Cruz')->assertSee('need correction');
@@ -59,27 +60,72 @@ class StudentEnrollmentFlowTest extends TestCase
         $this->get($preview)->assertOk()->assertSee('Import results')->assertSee('Imported');
         $this->get($preview.'/report')->assertOk()->assertStreamedContent("Row,Fullname,email,block,Status,Message\n2,\"Juan Dela Cruz\",juan@example.com,\"BSCE 2 A\",imported,\"Ready for New User activation.\"\n3,Invalid,bad-email,\"BSCE 2 A\",error,\"The email field must be a valid email address.\"\n");
         $this->assertCount(1, $this->data['student_invitations']);
-        $this->assertCount(1, $this->data['users']);
+        $this->assertCount(2, $this->data['users']);
         $this->post($preview, ['confirmation' => '1'])->assertStatus(409);
     }
 
-    public function test_preview_is_bound_to_admin_and_unprivileged_roles_cannot_import(): void
+    public function test_preview_is_bound_to_teacher_and_other_roles_cannot_import(): void
     {
-        $response = $this->signIn()->post('/admin/students/import/preview', ['csv' => UploadedFile::fake()->createWithContent('students.csv', "Fullname,email,block\nJuan,juan@example.com,BSCE 2 A")]);
+        $response = $this->signIn()->post('/teacher/students/import/preview', ['csv' => UploadedFile::fake()->createWithContent('students.csv', "Fullname,email,block\nJuan,juan@example.com,BSCE 2 A")]);
         $preview = $response->headers->get('Location');
-        $this->identity['uid'] = 'other-admin';
-        $this->withSession(['firebase_user' => $this->identity + ['authenticated_at' => now()->timestamp]])->get($preview)->assertRedirect('/admin/students/import');
+        $this->identity['uid'] = 'other-teacher';
+        $this->withSession(['firebase_user' => $this->identity + ['authenticated_at' => now()->timestamp]])->get($preview)->assertRedirect('/teacher/students/import');
         $this->get($preview.'/report')->assertNotFound();
-        foreach (['student', 'teacher'] as $role) {
-            $this->signIn($role)->get('/admin/students/import')->assertForbidden();
-            $this->post('/admin/students/import/preview', [])->assertForbidden();
+        foreach (['student', 'admin'] as $role) {
+            $this->signIn($role)->get('/teacher/students/import')->assertForbidden();
+            $this->post('/teacher/students/import/preview', [])->assertForbidden();
         }
+        $this->assertArrayNotHasKey('student_invitations', $this->data);
+    }
+
+    public function test_admin_only_sees_pending_activations_and_can_remove_invitations(): void
+    {
+        $this->enrollment->import([$this->row()], 'teacher');
+        $this->enrollment->import([$this->row(['email' => 'second@example.com'])], 'teacher');
+        $secondId = StudentEnrollment::key('second@example.com');
+        $this->data['student_invitations'][$secondId]['status'] = 'active';
+        $this->identity['uid'] = 'admin';
+        $this->signIn('admin')->get('/admin/students/activations')->assertOk()->assertSee('juan@example.com')
+            ->assertDontSee('second@example.com')->assertDontSee('name="csv"', false)->assertDontSee('Preview students');
+        $this->get('/admin/students/import')->assertRedirect('/admin/students/activations');
+        $this->get('/teacher/students/import')->assertForbidden();
+        $this->post('/teacher/students/import/preview', [])->assertForbidden();
+        $this->post('/admin/students/import/preview', [])->assertNotFound();
+        $url = '/admin/students/invitations/'.StudentEnrollment::key('juan@example.com');
+        $this->delete($url, [])->assertSessionHasErrors('confirmation');
+        $this->delete($url, ['confirmation' => '1'])->assertRedirect('/admin/students/activations');
+        $this->assertNull($this->enrollment->invitation('juan@example.com'));
+        $this->assertSame(['scores' => 99], $this->data['unrelated']);
+    }
+
+    public function test_teacher_cannot_read_global_pending_activations_or_remove_invitations(): void
+    {
+        $this->enrollment->import([$this->row()], 'teacher');
+        $this->signIn()->get('/admin/students/activations')->assertForbidden();
+        $this->delete('/admin/students/invitations/'.StudentEnrollment::key('juan@example.com'), ['confirmation' => '1'])->assertForbidden();
+        $this->assertNotNull($this->enrollment->invitation('juan@example.com'));
+    }
+
+    public function test_teacher_without_assigned_blocks_gets_guidance_and_no_enabled_upload(): void
+    {
+        $this->data['classes'] = [];
+        $this->signIn()->get('/teacher/students/import')->assertOk()->assertSee('No blocks are assigned to you yet')->assertSee('disabled', false);
+    }
+
+    public function test_teacher_report_rechecks_ownership_after_preview(): void
+    {
+        $response = $this->signIn()->post('/teacher/students/import/preview', ['csv' => UploadedFile::fake()->createWithContent('students.csv', "Fullname,email,block\nJuan,juan@example.com,BSCE 2 A")]);
+        $url = $response->headers->get('Location');
+        $this->get($url)->assertOk()->assertSee('1 ready');
+        $this->data['classes']['class-a']['teacher_uid'] = 'other-teacher';
+        $this->post($url, ['confirmation' => '1'])->assertRedirect($url);
+        $this->get($url)->assertOk()->assertSee('You can only import students into blocks currently assigned to you.');
         $this->assertArrayNotHasKey('student_invitations', $this->data);
     }
 
     public function test_email_verification_is_required_before_password_setup_and_link_is_single_use(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $uid = $invite['candidate_uid'];
         $this->auth->shouldReceive('getUserByEmail')->once()->andThrow(new UserNotFound('Not found'));
@@ -120,7 +166,7 @@ class StudentEnrollmentFlowTest extends TestCase
         $this->auth->shouldNotReceive('sendEmailVerificationLink');
         $this->post('/new-user', ['email' => 'unknown@example.com'])->assertRedirect('/new-user');
         $message = session('success');
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $this->auth->shouldReceive('getUserByEmail')->with('juan@example.com')->andReturn($this->record('unity-uid', false));
         $this->post('/new-user', ['email' => 'juan@example.com'])->assertRedirect('/new-user')->assertSessionHas('success', $message);
     }
@@ -157,7 +203,7 @@ class StudentEnrollmentFlowTest extends TestCase
 
     public function test_resend_limit_does_not_block_verified_password_setup(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $token = str_repeat('a', 64);
         $uid = $invite['candidate_uid'];
@@ -174,7 +220,7 @@ class StudentEnrollmentFlowTest extends TestCase
 
     public function test_activation_failure_keeps_profile_gated_and_can_retry_without_losing_import(): void
     {
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $token = str_repeat('a', 64);
         $uid = $invite['candidate_uid'];
@@ -193,7 +239,7 @@ class StudentEnrollmentFlowTest extends TestCase
     public function test_unauthorized_email_return_domain_shows_configuration_guidance_without_private_details(): void
     {
         config(['app.url' => 'http://localhost:8000']);
-        $this->enrollment->import([$this->row()], 'admin');
+        $this->enrollment->import([$this->row()], 'teacher');
         $invite = $this->enrollment->invitation('juan@example.com');
         $this->auth->shouldReceive('getUserByEmail')->with('juan@example.com')->andReturn($this->record($invite['candidate_uid'], false));
         $this->auth->shouldReceive('sendEmailVerificationLink')->once()->with('juan@example.com', Mockery::on(fn ($settings) => str_starts_with($settings['url'], 'http://localhost:8000/new-user/activate?')))

@@ -35,26 +35,32 @@ class StudentEnrollment
                 'block' => $data['blocks'][$row['block_id']]['name'] ?? 'Block unavailable'])->values()->all();
     }
 
-    public function preview(array $rows): array
+    public function blocksForTeacher(string $teacher): array
     {
-        $data = $this->read();
-
-        return array_map(fn ($row) => $this->assess($row, $data), $rows);
+        return $this->teacherBlocks($this->read(), $teacher);
     }
 
-    public function import(array $rows, string $admin): array
+    public function preview(array $rows, string $teacher): array
     {
-        return $this->change(function (&$data) use ($rows, $admin) {
-            abort_unless(($data['users'][$admin]['role'] ?? null) === 'admin', 403);
+        $data = $this->read();
+        $blocks = $this->teacherBlocks($data, $teacher);
+
+        return array_map(fn ($row) => $this->assess($row, $data, $blocks), $rows);
+    }
+
+    public function import(array $rows, string $teacher): array
+    {
+        return $this->change(function (&$data) use ($rows, $teacher) {
+            $blocks = $this->teacherBlocks($data, $teacher);
             $report = [];
             foreach ($rows as $row) {
-                $row = $this->assess($row, $data);
+                $row = $this->assess($row, $data, $blocks);
                 if ($row['status'] === 'ready') {
                     $data['student_invitations'][self::key($row['email'])] = [
                         'fullname' => $row['fullname'], 'email' => $row['email'], 'block_id' => $row['block_id'],
                         'status' => 'pending', 'revision' => (string) Str::uuid(),
                         'candidate_uid' => 'learner-'.substr(self::key($row['email']), 0, 40),
-                        'created_at' => now()->toIso8601String(), 'created_by' => $admin,
+                        'created_at' => now()->toIso8601String(), 'created_by' => $teacher,
                     ];
                     $row['status'] = 'imported';
                     $row['message'] = 'Ready for New User activation.';
@@ -174,7 +180,22 @@ class StudentEnrollment
             'block_application' => ['id' => (string) Str::uuid(), 'block_id' => $invite['block_id'], 'requested_at' => now()->toIso8601String()]];
     }
 
-    private function assess(array $row, array $data): array
+    private function teacherBlocks(array $data, string $teacher): array
+    {
+        abort_unless(($data['users'][$teacher]['role'] ?? null) === 'teacher', 403);
+        $blocks = [];
+        foreach ($data['classes'] ?? [] as $class) {
+            $blockId = $class['block_id'] ?? null;
+            if (($class['teacher_uid'] ?? null) === $teacher && isset($data['blocks'][$blockId]['name'])) {
+                $blocks[$blockId] = $data['blocks'][$blockId]['name'];
+            }
+        }
+        natcasesort($blocks);
+
+        return $blocks;
+    }
+
+    private function assess(array $row, array $data, array $allowedBlocks): array
     {
         $row['status'] = 'error';
         unset($row['block_id']);
@@ -185,23 +206,28 @@ class StudentEnrollment
         }
         $matches = array_keys(array_filter($data['blocks'] ?? [], fn ($block) => mb_strtolower(trim($block['name'] ?? '')) === mb_strtolower($row['block'])));
         if (count($matches) !== 1) {
-            $row['message'] = 'Block not found or ambiguous. Create/correct the block first.';
+            $row['message'] = 'Block not found or ambiguous. Check the name with your administrator.';
 
             return $row;
         }
         $row['block_id'] = $matches[0];
+        if (! isset($allowedBlocks[$row['block_id']])) {
+            $row['message'] = 'You can only import students into blocks currently assigned to you.';
+
+            return $row;
+        }
         foreach ($data['users'] ?? [] as $profile) {
             if (strtolower($profile['email'] ?? '') !== $row['email'] || ! empty($profile['activation_required'])) {
                 continue;
             }
             $row['status'] = ($profile['role'] ?? '') === 'student' ? 'skipped' : 'error';
-            $row['message'] = $row['status'] === 'skipped' ? 'Existing student account retained; manage block changes in Manage Classes.' : 'Email belongs to a teacher or administrator.';
+            $row['message'] = $row['status'] === 'skipped' ? 'Existing student account retained. Ask the administrator about block changes.' : 'Email is unavailable for student enrollment.';
 
             return $row;
         }
         if (isset($data['student_invitations'][self::key($row['email'])])) {
             $row['status'] = 'skipped';
-            $row['message'] = 'Already imported. Remove the pending invitation first to correct its details.';
+            $row['message'] = 'Already imported. Ask the administrator to remove the pending invitation before correcting its details.';
 
             return $row;
         }

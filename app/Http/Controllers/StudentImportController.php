@@ -10,16 +10,25 @@ use Illuminate\Support\Str;
 
 class StudentImportController extends Controller
 {
-    public function index(StudentEnrollment $enrollment)
+    public function index(Request $request, StudentEnrollment $enrollment)
     {
-        return view('admin.users.import', ['pending' => $enrollment->pending(), 'rows' => null, 'preview' => null, 'report' => false]);
+        return view('teacher.import-students', ['blocks' => $enrollment->blocksForTeacher($request->user()->uid), 'rows' => null, 'preview' => null, 'report' => false]);
     }
 
-    public function template()
+    public function template(Request $request, StudentEnrollment $enrollment)
     {
-        return response("Fullname,email,block\r\nJuan Dela Cruz,juan@example.com,BSCE 2 A\r\n", 200, [
-            'Content-Type' => 'text/csv; charset=UTF-8', 'Content-Disposition' => 'attachment; filename="students-template.csv"',
-        ]);
+        $blocks = $enrollment->blocksForTeacher($request->user()->uid);
+
+        return response()->streamDownload(function () use ($blocks) {
+            $stream = fopen('php://output', 'w');
+            fputcsv($stream, ['Fullname', 'email', 'block'], ',', '"', '');
+            $block = reset($blocks) ?: 'YOUR ASSIGNED BLOCK';
+            if (preg_match('/^\s*[=+@-]/u', $block)) {
+                $block = "'".$block;
+            }
+            fputcsv($stream, ['Juan Dela Cruz', 'juan@example.com', $block], ',', '"', '');
+            fclose($stream);
+        }, 'students-template.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     public function preview(Request $request, StudentCsv $csv, StudentEnrollment $enrollment)
@@ -29,18 +38,18 @@ class StudentImportController extends Controller
         $id = (string) Str::uuid();
         Cache::put($this->key($request, $id), ['source' => $rows, 'report' => false], now()->addMinutes(15));
 
-        return redirect()->route('admin.students.import.show', $id);
+        return redirect()->route('teacher.students.import.show', $id);
     }
 
     public function show(Request $request, StudentEnrollment $enrollment, string $preview)
     {
         $cached = Cache::get($this->key($request, $preview));
         if (! $cached) {
-            return redirect()->route('admin.students.import')->withErrors(['csv' => 'This preview expired. Please upload your CSV again.']);
+            return redirect()->route('teacher.students.import')->withErrors(['csv' => 'This preview expired. Please upload your CSV again.']);
         }
-        $rows = $cached['report'] ? $cached['rows'] : $enrollment->preview($cached['source']);
+        $rows = $cached['report'] ? $cached['rows'] : $enrollment->preview($cached['source'], $request->user()->uid);
 
-        return view('admin.users.import', ['pending' => [], 'rows' => $rows, 'preview' => $preview, 'report' => $cached['report']]);
+        return view('teacher.import-students', ['blocks' => $enrollment->blocksForTeacher($request->user()->uid), 'rows' => $rows, 'preview' => $preview, 'report' => $cached['report']]);
     }
 
     public function store(Request $request, StudentEnrollment $enrollment, string $preview)
@@ -52,15 +61,7 @@ class StudentImportController extends Controller
         $rows = $enrollment->import($cached['source'], $request->user()->uid);
         Cache::put($key, ['rows' => $rows, 'report' => true], now()->addHour());
 
-        return redirect()->route('admin.students.import.show', $preview)->with('success', 'Import finished. Review the results below.');
-    }
-
-    public function revoke(Request $request, StudentEnrollment $enrollment, string $invitation)
-    {
-        $request->validate(['confirmation' => ['accepted']]);
-        $enrollment->revoke($invitation, $request->user()->uid);
-
-        return redirect()->route('admin.students.import')->with('success', 'Pending invitation removed. You can now import corrected details. Existing accounts and scores were retained.');
+        return redirect()->route('teacher.students.import.show', $preview)->with('success', 'Import finished. Review the results below.');
     }
 
     public function report(Request $request, string $preview)
@@ -83,6 +84,6 @@ class StudentImportController extends Controller
 
     private function key(Request $request, string $id): string
     {
-        return 'student-import:'.hash('sha256', $request->user()->uid).':'.$id;
+        return 'teacher-student-import:'.hash('sha256', $request->user()->uid).':'.$id;
     }
 }

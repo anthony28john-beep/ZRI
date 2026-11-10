@@ -10,4 +10,5 @@
 .enrollment-confirm .button { width: fit-content; }
 .enrollment-page td { overflow-wrap: anywhere; }
 .enrollment-page details summary { cursor: pointer; }
+.enrollment-blocks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; list-style: none; padding: 0; }
 .activation-steps { padding-left: 22px; margin-top: 24px; color: var(--color-on-dark); line-height: 2; }

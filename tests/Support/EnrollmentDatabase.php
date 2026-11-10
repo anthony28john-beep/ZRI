@@ -17,7 +17,8 @@ trait EnrollmentDatabase
 
     private function enrollmentDatabase(): void
     {
-        $this->data = ['users' => ['admin' => ['role' => 'admin', 'email' => 'admin@example.com']],
+        $this->data = ['users' => ['admin' => ['role' => 'admin', 'email' => 'admin@example.com'], 'teacher' => ['role' => 'teacher', 'email' => 'teacher@example.com']],
+            'classes' => ['class-a' => ['teacher_uid' => 'teacher', 'block_id' => 'block-a']],
             'blocks' => ['block-a' => ['name' => 'BSCE 2 A']], 'unrelated' => ['scores' => 99]];
         $database = Mockery::mock(Database::class);
         $root = Mockery::mock(Reference::class);

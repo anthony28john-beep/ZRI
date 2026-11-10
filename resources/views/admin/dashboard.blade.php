@@ -47,10 +47,10 @@
                     <p>Add teachers with a temporary password and connect them to your classes.</p>
                     <span class="admin-action-link">Create Account <span aria-hidden="true">&rarr;</span></span>
                 </a>
-                <a class="admin-action-card" href="{{ route('admin.students.import') }}">
-                    <span class="admin-action-label">STUDENT ENROLLMENT</span><h3>Import your student list</h3>
-                    <p>Upload Fullname, email, and block. Students verify their email and set their own password.</p>
-                    <span class="admin-action-link">Import Students <span aria-hidden="true">&rarr;</span></span>
+                <a class="admin-action-card" href="{{ route('admin.students.activations') }}">
+                    <span class="admin-action-label">STUDENT ENROLLMENT</span><h3>Pending student activations</h3>
+                    <p>Teachers import their students. Review invitations awaiting email verification and password setup.</p>
+                    <span class="admin-action-link">Pending Activations <span aria-hidden="true">&rarr;</span></span>
                 </a>
                 <a class="admin-action-card admin-action-card-orange" href="{{ route('admin.classes') }}">
                     <span class="admin-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M14 6h4v4M6 14v4h4M10 6h4M6 10v4"/></svg></span>
@@ -65,7 +65,7 @@
             <div class="admin-home-section-heading"><div><span class="admin-eyebrow">A SIMPLE START</span><h2 id="admin-setup-heading">Build your classroom in three steps</h2></div><span class="admin-home-guide-tag">Setup guide</span></div>
             <ol class="admin-setup-steps">
                 <li><span class="admin-setup-number" aria-hidden="true">01</span><div><h3>Add your blocks</h3><p>Set up your school's block names to match the student CSV.</p><a href="{{ route('admin.classes') }}">Set up blocks &rarr;</a></div></li>
-                <li><span class="admin-setup-number" aria-hidden="true">02</span><div><h3>Welcome your people</h3><p>Create teachers and import student invitations. Students activate through New User.</p><a href="{{ route('admin.students.import') }}">Import students &rarr;</a></div></li>
+                <li><span class="admin-setup-number" aria-hidden="true">02</span><div><h3>Welcome your people</h3><p>Create teachers, who import their assigned students. Monitor activation through New User.</p><a href="{{ route('admin.students.activations') }}">View pending activations &rarr;</a></div></li>
                 <li><span class="admin-setup-number" aria-hidden="true">03</span><div><h3>Connect the classroom</h3><p>Assign a block to a teacher. Its students join the class roster automatically.</p><a href="{{ route('admin.classes') }}">Assign a teacher &rarr;</a></div></li>
             </ol>
         </section>

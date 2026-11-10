@@ -42,7 +42,7 @@ navigationDropdowns.forEach(dropdown => {
     });
 });
 
-const desktopNavigation = window.matchMedia('(min-width: 1200px)');
+const desktopNavigation = window.matchMedia('(min-width: 1360px)');
 desktopNavigation.addEventListener('change', event => {
     if (event.matches) document.querySelectorAll('.workspace-mobile-menu[open]').forEach(menu => { menu.open = false; });
 });

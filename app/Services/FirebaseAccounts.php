@@ -50,7 +50,7 @@ class FirebaseAccounts
     public function create(#[\SensitiveParameter] array $data, ?string $createdBy = null): void
     {
         if (! $createdBy || ($data['role'] ?? null) !== 'teacher') {
-            throw new AccountException('Import students through CSV. This form creates teacher accounts only.', 'role');
+            throw new AccountException('Teachers import students through CSV. This form creates teacher accounts only.', 'role');
         }
         $uid = null;
         try {
