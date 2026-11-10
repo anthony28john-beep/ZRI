@@ -25,14 +25,12 @@
             <div class="download-details">
                 <span class="download-provider">GAME FILES &middot; GOOGLE DRIVE</span>
                 <h2 id="download-title">Your training starts here.</h2>
-                <p>Explore the site, identify hazards, and practice making safer decisions. Open the game folder to find the files you need to get started.</p>
-                <a class="button download-button" href="{{ config('student_dashboard.download_url') }}" target="_blank" rel="noopener noreferrer">
+                <p>Explore the site, identify hazards, and practice making safer decisions. Download the game to your computer to get started.</p>
+                <a class="button download-button" href="{{ config('student_dashboard.download_url') }}">
                     <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg>
-                    Open download folder
-                    <span class="download-external" aria-hidden="true">&#8599;</span>
-                    <span class="download-sr-only"> (opens Google Drive in a new tab)</span>
+                    Download Game
                 </a>
-                <p class="download-caption">Opens Google Drive in a new tab.</p>
+                <p class="download-caption">Downloads from Google Drive. Google may request confirmation before the download starts.</p>
                 <a class="download-about" href="{{ route('student.about-game') }}">Learn about the game <span aria-hidden="true">&rarr;</span></a>
             </div>
         </section>
@@ -40,12 +38,12 @@
         <section class="download-start" aria-labelledby="download-start-title">
             <h2 id="download-start-title">Get ready in three steps</h2>
             <ol class="download-steps">
-                <li><span class="download-step-number" aria-hidden="true">01</span><div><h3>Open the folder</h3><p>Use the button above to view the available game files on Google Drive.</p></div></li>
-                <li><span class="download-step-number" aria-hidden="true">02</span><div><h3>Download your files</h3><p>Save the game to your computer and follow any instructions included in the folder. If it is a ZIP file, extract it first.</p></div></li>
+                <li><span class="download-step-number" aria-hidden="true">01</span><div><h3>Download the game</h3><p>Click Download Game above and save the file to your computer.</p></div></li>
+                <li><span class="download-step-number" aria-hidden="true">02</span><div><h3>Prepare your files</h3><p>If the download is a ZIP file, extract it first. Keep the game and its supporting folders together.</p></div></li>
                 <li><span class="download-step-number" aria-hidden="true">03</span><div><h3>Sign in and play</h3><p>Launch the game and use the same email and password as your website account.</p></div></li>
             </ol>
         </section>
-        <p class="download-help">Need help accessing the folder? Contact your teacher or administrator.</p>
+        <p class="download-help">Need help downloading the game? Contact your teacher or administrator.</p>
     </main>
 </div>
 @endsection

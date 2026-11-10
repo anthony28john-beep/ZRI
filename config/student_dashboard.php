@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'download_url' => 'https://drive.google.com/drive/folders/1xZ-mCC96reZrcs_NTMMRzdwunWscTrB4?usp=sharing',
+    'download_url' => 'https://drive.google.com/uc?export=download&id=1_4ScA_1l1qPkp7THvGnW512SEczycQQP',
 
     // Paths relative to public/. Added individually after the user supplies each image.
     'images' => [
