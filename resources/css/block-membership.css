@@ -1,6 +1,17 @@
 .account-page .account-card.student-block-card { display: block; margin-top: 24px; padding: 28px 32px; }
 .student-block-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
 .student-block-heading h2 { font-size: 24px; letter-spacing: -.5px; }
+.student-block-heading .student-block-description { margin-top: 8px; }
+.student-block-status { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--color-border); border-radius: 30px; color: var(--color-muted); background: var(--color-surface-soft); font-size: 12px; font-weight: 600; line-height: 1.5; }
+.student-block-status > span { width: 7px; height: 7px; flex-shrink: 0; border-radius: 50%; background: currentColor; }
+.student-block-status.is-joined { color: var(--color-success); border-color: var(--color-success-border); background: var(--color-success-soft); }
+.student-block-status.is-pending { color: var(--color-warning); border-color: var(--color-warning-border); background: var(--color-warning-soft); }
+.student-block-next { margin: 20px 0; padding-left: 16px; border-left: 3px solid var(--color-accent); }
+.student-block-next > strong { display: block; margin-bottom: 7px; color: var(--color-text); font-size: 14px; }
+.student-block-next p { color: var(--color-muted); font-size: 13px; line-height: 1.8; }
+.student-block-next a { display: inline-flex; margin-top: 10px; }
+.student-block-label { color: var(--color-muted); font-size: 11px; }
+.student-block-leave form > .student-block-description { margin-bottom: 16px; }
 .student-block-description, .student-block-current p, .student-block-pending p { color: var(--color-muted); font-size: 13px; line-height: 1.8; }
 .student-block-current { padding: 20px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface-soft); }
 .student-block-current > span { display: block; color: var(--color-muted); font-size: 11px; margin-bottom: 8px; }

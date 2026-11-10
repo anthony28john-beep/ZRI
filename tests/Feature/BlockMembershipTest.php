@@ -40,15 +40,15 @@ class BlockMembershipTest extends TestCase
     public function test_current_members_see_their_block_and_leave_controls(): void
     {
         $this->memberships->shouldReceive('forStudent')->with('signed-in')->andReturn(['current' => ['id' => self::BLOCK, 'name' => 'BSIT 1A'], 'pending' => null, 'available' => []]);
-        $this->signIn()->get('/student/account')->assertOk()->assertSee('My Block')->assertSee('BSIT 1A')->assertSee('Confirm leave')->assertDontSee('Send application');
+        $this->signIn()->get('/student/account')->assertOk()->assertSee('My Block')->assertSee('BSIT 1A')->assertSee('Joined')->assertSee('No action is needed')->assertSee('Confirm leave')->assertDontSee('Send application');
     }
 
     public function test_students_without_membership_can_apply_and_pending_students_can_cancel(): void
     {
         $this->memberships->shouldReceive('forStudent')->with('signed-in')->once()->andReturn(['current' => null, 'pending' => null, 'available' => [self::BLOCK => 'BSIT 1A']]);
-        $this->signIn()->get('/student/account')->assertOk()->assertSee('BSIT 1A')->assertSee('Send application');
+        $this->signIn()->get('/student/account')->assertOk()->assertSee('BSIT 1A')->assertSee('Not assigned')->assertSee('Your next step: choose a block')->assertSee('Send application');
         $this->memberships->shouldReceive('forStudent')->with('signed-in')->once()->andReturn(['current' => null, 'pending' => ['name' => 'BSIT 1A'], 'available' => []]);
-        $this->get('/student/account')->assertOk()->assertSee('Pending approval')->assertSee('Cancel application')->assertDontSee('Send application');
+        $this->get('/student/account')->assertOk()->assertSee('Waiting for teacher approval')->assertSee('Refresh block status')->assertSee('Cancel application')->assertDontSee('Send application')->assertDontSee('Not assigned');
     }
 
     public function test_actions_use_the_session_student_instead_of_a_submitted_uid(): void
