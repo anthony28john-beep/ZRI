@@ -9,6 +9,7 @@
 @import './student-enrollment.css';
 @import './auth-background.css';
 @import './student-download.css';
+@import './workspace-navigation.css';
 
 :root {
     color-scheme: light;

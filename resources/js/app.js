@@ -39,6 +39,11 @@ navigationDropdowns.forEach(dropdown => {
         if (!dropdown.contains(event.relatedTarget)) dropdown.open = false;
     });
 });
+
+const desktopNavigation = window.matchMedia('(min-width: 1200px)');
+desktopNavigation.addEventListener('change', event => {
+    if (event.matches) document.querySelectorAll('.workspace-mobile-menu[open]').forEach(menu => { menu.open = false; });
+});
 document.addEventListener('submit', event => {
     const form = event.target;
     if (event.defaultPrevented || !(form instanceof HTMLFormElement)) return;

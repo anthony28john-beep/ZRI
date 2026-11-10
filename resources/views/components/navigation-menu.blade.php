@@ -1,6 +1,6 @@
 @props(['label' => 'Navigation'])
 
-<details class="navigation-dropdown" data-navigation-dropdown>
+<details {{ $attributes->class(['navigation-dropdown']) }} data-navigation-dropdown>
     <summary class="navigation-toggle" aria-label="{{ $label }}">
         <svg class="navigation-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
         <span>Menu</span>
