@@ -1,3 +1,5 @@
+import './theme';
+
 window.addEventListener('pageshow', event => {
     if (event.persisted) { window.location.reload(); return; }
     document.querySelectorAll('form[aria-busy="true"]').forEach(form => {

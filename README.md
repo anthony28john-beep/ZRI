@@ -4,6 +4,8 @@ ZeroRiskInitiative is a school capstone project that connects a Unity safety edu
 
 The website uses a construction yellow, charcoal, and warm white theme with dedicated administrator, teacher, and student workspaces.
 
+Students, teachers, and administrators can switch dark mode on or off from the account dropdown. The browser remembers the selection; without a saved choice, the website follows the device's light/dark preference.
+
 ## Technology stack
 
 - Laravel 12 and PHP 8.2+

@@ -29,6 +29,12 @@
                 @if ($role !== 'admin')
                     <a class="workspace-account-link {{ $accountActive ? 'is-active' : '' }}" href="{{ route($role.'.account') }}" @if ($accountActive) aria-current="page" @endif><x-nav-icon name="user" />Account Information</a>
                 @endif
+                <button type="button" class="workspace-account-link workspace-theme-toggle" role="switch" aria-checked="false" aria-label="Dark mode" data-theme-toggle>
+                    <x-nav-icon name="moon" />
+                    <span>Dark mode</span>
+                    <span class="workspace-theme-state" data-theme-status aria-hidden="true">Off</span>
+                    <span class="workspace-theme-switch" aria-hidden="true"><span></span></span>
+                </button>
                 <form action="{{ route('logout') }}" method="POST" class="{{ $role === 'admin' ? 'admin-nav-logout' : 'portal-logout' }}">
                     @csrf
                     <button type="submit" class="workspace-account-link workspace-signout"><x-nav-icon name="logout" />Log Out</button>

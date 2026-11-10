@@ -10,9 +10,11 @@
 @import './auth-background.css';
 @import './student-download.css';
 @import './workspace-navigation.css';
+@import './dark-mode.css';
 
 :root {
-    color-scheme: light;
+    --theme-color-scheme: light;
+    color-scheme: var(--theme-color-scheme);
     --color-accent: #f7c531;
     --color-link: #755500;
     --color-on-accent: #24282d;
@@ -342,7 +344,7 @@
     }
 
 
-    .admin-page { min-height: 100vh; color-scheme: light; font-family: 'Segoe UI', Arial, sans-serif; }
+    .admin-page { min-height: 100vh; color-scheme: var(--theme-color-scheme); font-family: 'Segoe UI', Arial, sans-serif; }
     .admin-page .admin-container { width: min(1180px, 100%); margin: 0 auto; padding: 0 32px; }
     .admin-page .admin-topbar { background: var(--color-nav-background); border-bottom: 1px solid var(--color-accent-strong); box-shadow: 0 5px 20px rgba(36, 40, 45, 0.12); }
     .admin-page .admin-topbar-inner,
@@ -505,7 +507,7 @@
 
     .account-page {
         min-height: 100vh;
-        color-scheme: light;
+        color-scheme: var(--theme-color-scheme);
         font-family: 'Segoe UI', Arial, sans-serif;
     }
 
