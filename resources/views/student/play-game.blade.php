@@ -25,11 +25,23 @@
             <div class="download-details">
                 <span class="download-provider">GAME FILES &middot; GOOGLE DRIVE</span>
                 <h2 id="download-title">Your training starts here.</h2>
-                <p>Explore the site, identify hazards, and practice making safer decisions. Download the game to your computer to get started.</p>
-                <a class="button download-button" href="{{ config('student_dashboard.download_url') }}">
-                    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg>
-                    Download Game
-                </a>
+                <p>Explore the site, identify hazards, and practice making safer decisions. Choose the download that matches your device.</p>
+                <div class="download-platforms" aria-label="Choose your game platform">
+                    <div class="download-platform">
+                        <a class="button download-button" href="{{ config('student_dashboard.download_url') }}" aria-describedby="windows-download-help">
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M12 16v5m-5 0h10"/></svg>
+                            Download for Windows
+                        </a>
+                        <p id="windows-download-help">Desktop game files &middot; Windows computers</p>
+                    </div>
+                    <div class="download-platform">
+                        <a class="button download-button download-button-android" href="{{ config('student_dashboard.android_download_url') }}" aria-describedby="android-download-help">
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 5h4m-3 14h2"/></svg>
+                            Download for Android
+                        </a>
+                        <p id="android-download-help">APK file &middot; Android phones and tablets</p>
+                    </div>
+                </div>
                 <p class="download-caption">Downloads from Google Drive. Google may request confirmation before the download starts.</p>
                 <a class="download-about" href="{{ route('student.about-game') }}">Learn about the game <span aria-hidden="true">&rarr;</span></a>
             </div>
@@ -38,8 +50,8 @@
         <section class="download-start" aria-labelledby="download-start-title">
             <h2 id="download-start-title">Get ready in three steps</h2>
             <ol class="download-steps">
-                <li><span class="download-step-number" aria-hidden="true">01</span><div><h3>Download the game</h3><p>Click Download Game above and save the file to your computer.</p></div></li>
-                <li><span class="download-step-number" aria-hidden="true">02</span><div><h3>Prepare your files</h3><p>If the download is a ZIP file, extract it first. Keep the game and its supporting folders together.</p></div></li>
+                <li><span class="download-step-number" aria-hidden="true">01</span><div><h3>Choose your device</h3><p>Select Windows for your computer or Android for your phone or tablet. Save the file to that device.</p></div></li>
+                <li><span class="download-step-number" aria-hidden="true">02</span><div><h3>Set up the game</h3><p><strong>Windows:</strong> Extract the download if it is a ZIP file. Keep the game and its supporting folders together.</p><p><strong>Android:</strong> Open the APK to install it. If prompted, allow your browser or file manager to install this app. The APK is for Android, not iPhone or iPad.</p></div></li>
                 <li><span class="download-step-number" aria-hidden="true">03</span><div><h3>Sign in and play</h3><p>Launch the game and use the same email and password as your website account.</p></div></li>
             </ol>
         </section>

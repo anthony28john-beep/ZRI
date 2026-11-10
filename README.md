@@ -25,7 +25,7 @@ Students, teachers, and administrators can switch dark mode on or off from the a
 
 Accounts support email verification, password recovery, and email/password updates. Administrator-created accounts require replacement of their temporary password.
 
-The Unity game runs separately and saves results to Firebase. The student Download Game page requests a direct file download from Google Drive and includes setup guidance. Update the download URL in `config/student_dashboard.php` when needed. Google Drive may still require confirmation or permission; the website cannot bypass those checks.
+The Unity game runs separately and saves results to Firebase. The student Download Game page has separate Windows and Android APK downloads with setup guidance for each platform. Update `download_url` (Windows) and `android_download_url` in `config/student_dashboard.php` when needed. Google Drive may still require confirmation or permission; the website cannot bypass those checks.
 
 ## Requirements
 

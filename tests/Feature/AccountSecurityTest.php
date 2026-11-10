@@ -68,7 +68,9 @@ class AccountSecurityTest extends TestCase
             ->assertSee('class="portal-logout"', false)->assertDontSee('class="logout-form"', false);
         $game = $this->get('/student/play-game')->assertOk();
         $game->assertSee('Download Game')->assertSee('Get ready in three steps')
+            ->assertSee('Download for Windows')->assertSee('Download for Android')
             ->assertSee('href="'.e(config('student_dashboard.download_url')).'"', false)
+            ->assertSee('href="'.e(config('student_dashboard.android_download_url')).'"', false)
             ->assertDontSee('Open download folder')->assertDontSee('target="_blank"', false);
         $this->get('/student/about-game')->assertOk()->assertSee('hazard-identification')->assertSee('images/student/about1.png');
         $scores = Mockery::mock(FirestoreScoreboard::class);
