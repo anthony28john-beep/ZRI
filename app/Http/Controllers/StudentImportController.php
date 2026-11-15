@@ -12,7 +12,8 @@ class StudentImportController extends Controller
 {
     public function index(Request $request, StudentEnrollment $enrollment)
     {
-        return view('teacher.import-students', ['blocks' => $enrollment->blocksForTeacher($request->user()->uid), 'rows' => null, 'preview' => null, 'report' => false]);
+        return view('teacher.import-students', ['blocks' => $enrollment->blocksForTeacher($request->user()->uid), 'rows' => null, 'preview' => null, 'report' => false,
+            'expiresAt' => null, 'history' => $this->history($request, $enrollment)]);
     }
 
     public function template(Request $request, StudentEnrollment $enrollment)
@@ -36,7 +37,8 @@ class StudentImportController extends Controller
         $request->validate(['csv' => ['required', 'file', 'extensions:csv', 'mimetypes:text/plain,text/csv,application/csv,application/vnd.ms-excel', 'max:1024']]);
         $rows = $csv->parse($request->file('csv'));
         $id = (string) Str::uuid();
-        Cache::put($this->key($request, $id), ['source' => $rows, 'report' => false], now()->addMinutes(15));
+        $expiresAt = now()->addMinutes(15);
+        Cache::put($this->key($request, $id), ['source' => $rows, 'report' => false, 'expires_at' => $expiresAt->toIso8601String()], $expiresAt);
 
         return redirect()->route('teacher.students.import.show', $id);
     }
@@ -49,7 +51,8 @@ class StudentImportController extends Controller
         }
         $rows = $cached['report'] ? $cached['rows'] : $enrollment->preview($cached['source'], $request->user()->uid);
 
-        return view('teacher.import-students', ['blocks' => $enrollment->blocksForTeacher($request->user()->uid), 'rows' => $rows, 'preview' => $preview, 'report' => $cached['report']]);
+        return view('teacher.import-students', ['blocks' => $enrollment->blocksForTeacher($request->user()->uid), 'rows' => $rows, 'preview' => $preview, 'report' => $cached['report'],
+            'expiresAt' => $cached['expires_at'] ?? null, 'history' => $this->history($request, $enrollment)]);
     }
 
     public function store(Request $request, StudentEnrollment $enrollment, string $preview)
@@ -58,8 +61,9 @@ class StudentImportController extends Controller
         $key = $this->key($request, $preview);
         $cached = Cache::get($key);
         abort_unless($cached && ! $cached['report'], 409, 'Upload the CSV again to get a fresh preview.');
-        $rows = $enrollment->import($cached['source'], $request->user()->uid);
-        Cache::put($key, ['rows' => $rows, 'report' => true], now()->addHour());
+        $rows = $enrollment->import($cached['source'], $request->user()->uid, $preview);
+        $expiresAt = now()->addHour();
+        Cache::put($key, ['rows' => $rows, 'report' => true, 'expires_at' => $expiresAt->toIso8601String()], $expiresAt);
 
         return redirect()->route('teacher.students.import.show', $preview)->with('success', 'Import finished. Review the results below.');
     }
@@ -85,5 +89,15 @@ class StudentImportController extends Controller
     private function key(Request $request, string $id): string
     {
         return 'teacher-student-import:'.hash('sha256', $request->user()->uid).':'.$id;
+    }
+
+    private function history(Request $request, StudentEnrollment $enrollment): array
+    {
+        return array_map(function ($entry) use ($request) {
+            $report = Cache::get($this->key($request, $entry['id']));
+            $entry['report_available'] = ($report['report'] ?? false) === true;
+
+            return $entry;
+        }, $enrollment->importHistory($request->user()->uid));
     }
 }

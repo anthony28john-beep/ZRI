@@ -54,6 +54,6 @@ document.addEventListener('submit', event => {
     form.querySelectorAll('button[type="submit"]').forEach(button => {
         button.dataset.originalLabel = button.innerHTML;
         button.disabled = true;
-        button.textContent = 'Please wait?';
+        button.textContent = 'Please wait…';
     });
 });

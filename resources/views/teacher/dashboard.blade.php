@@ -6,6 +6,9 @@
     @if ($page === 'home')
         @include('teacher.partials.home')
     @else
+    @if ($page === 'leaderboard')
+        <div class="tp-notice">Compare your class below, or <a class="tp-link" href="#all-students-heading">view all-student leaderboards &darr;</a>. Each section has its own level filter.</div>
+    @endif
     <header class="tp-heading">
         <div><span class="tp-eyebrow">TEACHER WORKSPACE</span>
             <h1>{{ $page === 'home' ? 'Welcome, '.auth()->user()->name.'!' : ($detail ? 'Student results' : ucfirst($page)) }}</h1>
@@ -19,13 +22,15 @@
         <section class="tp-panel tp-empty"><span class="tp-step">01</span><h2>Your classroom starts here</h2><p>No classes have been assigned to you yet. Ask your administrator to create a class and assign your students.</p></section>
     @else
         <form method="GET" action="{{ route('teacher.'.$page) }}" class="tp-toolbar">
-            <div><label for="class">Class</label><select id="class" name="class">@foreach ($classes as $class)<option value="{{ $class['id'] }}" @selected($selectedClass['id'] === $class['id'])>{{ $class['name'] }}</option>@endforeach</select></div>
+            @if ($page === 'leaderboard')<input type="hidden" name="global_level" value="{{ $globalLevel }}">@endif
+            <div><label for="class">{{ $page === 'leaderboard' ? 'Your class' : 'Class' }}</label><select id="class" name="class">@foreach ($classes as $class)<option value="{{ $class['id'] }}" @selected($selectedClass['id'] === $class['id'])>{{ $class['name'] }}</option>@endforeach</select></div>
             @if (in_array($page, ['progress', 'leaderboard']))
-                <div><label for="level">Level</label><select id="level" name="level">@foreach ($levels as $id => $label)<option value="{{ $id }}" @selected($level === $id)>{{ $label }}</option>@endforeach</select></div>
+                <div><label for="level">{{ $page === 'leaderboard' ? 'Class leaderboard level' : 'Level' }}</label><select id="level" name="level">@foreach ($levels as $id => $label)<option value="{{ $id }}" @selected($level === $id)>{{ $label }}</option>@endforeach</select></div>
             @endif
             @if ($page === 'students' && !$detail)<div class="tp-search"><label for="q">Find a student</label><input id="q" name="q" value="{{ $search }}" maxlength="100" placeholder="Search by name"></div>@endif
-            <button class="button" type="submit">View results</button>
+            <button class="button" type="submit">{{ $page === 'leaderboard' ? 'Update class leaderboard' : 'View results' }}</button>
         </form>
+        @if ($page === 'leaderboard')<p class="tp-caption teacher-filter-note">This filter changes only the class leaderboard. The all-student section has a separate filter below.</p>@endif
         @if ($summary['unavailable'])<div class="tp-notice" role="status">Results for {{ $summary['unavailable'] }} student(s) are temporarily unavailable. They are excluded from progress totals and rankings. Refresh to try again.</div>@endif
         @if ($page === 'students' && $detail)
             @php($student = $students[$detail])

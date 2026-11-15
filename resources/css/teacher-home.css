@@ -44,6 +44,8 @@
 .th-tool-orange .th-tool-number { color: var(--color-link); border-color: var(--color-border); background: var(--color-surface-soft); }
 .th-tool-orange .th-tool-action { color: var(--color-link); }
 .th-follow-ups { margin-top: 32px; }
+.teacher-filter-note { margin: -8px 0 24px; }
+.th-class-picker { flex-wrap: wrap; }
 .th-follow-ups .tp-eyebrow { font-size: 9px; letter-spacing: 1.4px; }
 .th-footer { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--color-border); text-align: center; color: var(--color-muted); font-size: 11px; line-height: 1.7; }
 @media (max-width: 850px) { .th-hero { grid-template-columns: 1fr; gap: 28px; padding: 30px; } .th-section-heading { align-items: start; flex-direction: column; gap: 10px; } }

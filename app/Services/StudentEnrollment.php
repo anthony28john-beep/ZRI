@@ -40,6 +40,14 @@ class StudentEnrollment
         return $this->teacherBlocks($this->read(), $teacher);
     }
 
+    public function importHistory(string $teacher): array
+    {
+        $data = $this->read();
+        $this->teacherBlocks($data, $teacher);
+
+        return collect($data['teacher_import_history'][$teacher] ?? [])->sortByDesc('created_at')->values()->all();
+    }
+
     public function preview(array $rows, string $teacher): array
     {
         $data = $this->read();
@@ -48,9 +56,11 @@ class StudentEnrollment
         return array_map(fn ($row) => $this->assess($row, $data, $blocks), $rows);
     }
 
-    public function import(array $rows, string $teacher): array
+    public function import(array $rows, string $teacher, ?string $importId = null): array
     {
-        return $this->change(function (&$data) use ($rows, $teacher) {
+        $importId ??= (string) Str::uuid();
+
+        return $this->change(function (&$data) use ($rows, $teacher, $importId) {
             $blocks = $this->teacherBlocks($data, $teacher);
             $report = [];
             foreach ($rows as $row) {
@@ -67,6 +77,13 @@ class StudentEnrollment
                 }
                 $report[] = $row;
             }
+            $counts = array_count_values(array_column($report, 'status'));
+            $data['teacher_import_history'][$teacher][$importId] = [
+                'id' => $importId, 'created_at' => now()->toIso8601String(), 'total' => count($report),
+                'imported' => $counts['imported'] ?? 0, 'skipped' => $counts['skipped'] ?? 0, 'errors' => $counts['error'] ?? 0,
+            ];
+            $data['teacher_import_history'][$teacher] = collect($data['teacher_import_history'][$teacher])
+                ->sortByDesc('created_at')->take(20)->all();
 
             return $report;
         });

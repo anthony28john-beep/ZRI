@@ -3,14 +3,20 @@
         <div>
             <span class="tp-eyebrow">ALL STUDENTS</span>
             <h2 id="all-students-heading">Leaderboards by Level</h2>
-            <p class="tp-caption">Highest scores across all blocks, just like the student scoreboard.</p>
+            <p class="tp-caption">Highest scores across all blocks. Your selected class does not restrict this section.</p>
         </div>
-        <a class="tp-link" href="{{ route('teacher.leaderboard', request()->only('class', 'level')) }}">Refresh &rarr;</a>
+        <a class="tp-link" href="{{ route('teacher.leaderboard', request()->only('class', 'level', 'global_level')) }}#all-students-heading">Refresh &rarr;</a>
     </div>
 
     @if ($leaderboardsUnavailable)
         <div class="tp-notice" role="status">All-student leaderboards are temporarily unavailable. Please try again shortly.</div>
     @else
+        <form method="GET" action="{{ route('teacher.leaderboard') }}#all-students-heading" class="tp-toolbar">
+            @if ($selectedClass)<input type="hidden" name="class" value="{{ $selectedClass['id'] }}">@endif
+            <input type="hidden" name="level" value="{{ $level }}">
+            <div><label for="global-level">All-student leaderboard level</label><select id="global-level" name="global_level"><option value="">All levels</option>@foreach ($globalLevels as $name)<option value="{{ $name }}" @selected($globalLevel === $name)>{{ $name }}</option>@endforeach</select></div>
+            <button class="button" type="submit">Update all-student leaderboard</button>
+        </form>
         @forelse ($leaderboards as $board)
             <section class="tp-panel tp-leaderboard" aria-labelledby="all-level-{{ $loop->index }}">
                 <div class="tp-section-heading">

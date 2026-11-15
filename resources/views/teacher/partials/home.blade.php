@@ -1,5 +1,6 @@
 @include('partials.messages')
-@php($classQuery = $selectedClass ? ['class' => $selectedClass['id']] : [])
+@php($classQuery = ($selectedClass ? ['class' => $selectedClass['id']] : []) + ['level' => $level])
+@if ($levelsUnavailable)<div class="tp-notice" role="status">Available levels could not be refreshed. Showing levels from your class results. Refresh to try again.</div>@endif
 
 <section class="th-hero" aria-labelledby="teacher-home-heading">
     <div class="th-intro">
@@ -16,13 +17,13 @@
         <div class="th-overview-heading"><span class="tp-eyebrow">YOUR CLASSROOM</span><span class="th-mark" aria-hidden="true">ZRI</span></div>
         <h2 id="teacher-class-overview">{{ $selectedClass['name'] ?? 'Ready for a new beginning' }}</h2>
         @if ($selectedClass)
-            <p class="tp-caption">A snapshot of the selected class.</p>
+            <p class="tp-caption">{{ $levels[$level] }} &middot; A snapshot of the selected class.</p>
             <dl class="th-stats" aria-label="Class overview">
-                @foreach (['assigned' => 'Assigned students', 'started' => 'Started playing', 'completed' => 'Completed Level 1', 'not_started' => 'Not started'] as $key => $label)
+                @foreach (['assigned' => 'Assigned students', 'started' => 'Started '.$levels[$level], 'completed' => 'Completed '.$levels[$level], 'not_started' => 'Not started '.$levels[$level]] as $key => $label)
                     <div><dt>{{ $label }}</dt><dd>{{ $summary[$key] }}</dd></div>
                 @endforeach
             </dl>
-            <p class="th-overview-note">Progress totals use available game results.</p>
+            <p class="th-overview-note">All progress totals refer to {{ $levels[$level] }}. Started includes completed students; unavailable results are excluded.</p>
         @else
             <p class="th-empty-description">No classes have been assigned to you yet. Ask your administrator to assign a block to your account.</p>
             <div class="th-empty-steps"><span>01 &nbsp; Get a block assignment</span><span>02 &nbsp; Review student applications</span><span>03 &nbsp; Follow their progress</span></div>
@@ -32,9 +33,10 @@
 
 @if ($classes)
     <form method="GET" action="{{ route('teacher.home') }}" class="tp-toolbar th-class-picker">
-        <div class="th-class-copy"><h2>Your teaching space</h2><p>Choose the class you want to view.</p></div>
+        <div class="th-class-copy"><h2>Your teaching space</h2><p>Choose a class and level for your overview and follow-ups.</p></div>
         <div><label for="home-class">Selected class</label><select id="home-class" name="class">@foreach ($classes as $class)<option value="{{ $class['id'] }}" @selected($selectedClass['id'] === $class['id'])>{{ $class['name'] }}</option>@endforeach</select></div>
-        <button class="button" type="submit">View Class</button>
+        <div><label for="home-level">Selected level</label><select id="home-level" name="level">@foreach ($levels as $id => $label)<option value="{{ $id }}" @selected($level === $id)>{{ $label }}</option>@endforeach</select></div>
+        <button class="button" type="submit">View overview</button>
     </form>
     @if ($summary['unavailable'])<div class="tp-notice" role="status">Results for {{ $summary['unavailable'] }} student(s) are temporarily unavailable. They are excluded from progress totals and rankings. Refresh to try again.</div>@endif
 @endif
@@ -61,13 +63,14 @@
 
 @if ($selectedClass)
     <section class="tp-panel th-follow-ups" aria-labelledby="teacher-follow-ups-heading">
-        <div class="tp-section-heading"><div><span class="tp-eyebrow">A LITTLE GUIDANCE GOES A LONG WAY</span><h2 id="teacher-follow-ups-heading">Students to follow up</h2></div><a class="tp-link" href="{{ route('teacher.students', $classQuery) }}">View all students &rarr;</a></div>
+        <div class="tp-section-heading"><div><span class="tp-eyebrow">{{ $levels[$level] }} FOLLOW-UPS</span><h2 id="teacher-follow-ups-heading">Students to follow up</h2></div><a class="tp-link" href="{{ route('teacher.progress', $classQuery) }}">View level progress &rarr;</a></div>
         <div class="tp-table-wrap"><table class="tp-table"><thead><tr><th scope="col">Student</th><th scope="col">Learning status</th><th scope="col">Details</th></tr></thead><tbody>
-            @php($followUps = array_filter($students, fn ($student) => $student['unavailable'] || ! (collect($student['results']['rows'])->firstWhere('id', 'level1')['completed'] ?? false)))
+            @php($followUps = array_filter($students, fn ($student) => $student['unavailable'] || ! (collect($student['results']['rows'] ?? [])->firstWhere('id', $level)['completed'] ?? false)))
             @forelse ($followUps as $student)
-                <tr><td>{{ $student['name'] }}</td><td><span class="tp-status">{{ $student['unavailable'] ? 'Results unavailable' : ($student['results']['has_results'] ? 'Level 1 incomplete' : 'Not started') }}</span></td><td><a class="tp-link" href="{{ route('teacher.students.show', ['student' => $student['uid']] + $classQuery) }}">View results</a></td></tr>
+                @php($followUpLevel = collect($student['results']['rows'] ?? [])->firstWhere('id', $level))
+                <tr><td>{{ $student['name'] }}</td><td><span class="tp-status">{{ $student['unavailable'] ? 'Results unavailable' : (($followUpLevel['status'] ?? 'Not played') === 'Not played' ? $levels[$level].' not started' : $levels[$level].' incomplete') }}</span></td><td><a class="tp-link" href="{{ route('teacher.students.show', ['student' => $student['uid']] + $classQuery) }}">View results</a></td></tr>
             @empty
-                <tr><td colspan="3">{{ $summary['assigned'] ? 'Everyone has completed Level 1. Great progress!' : 'No students assigned to this class yet.' }}</td></tr>
+                <tr><td colspan="3">{{ $summary['assigned'] ? 'Everyone has completed '.$levels[$level].'. Great progress!' : 'No students assigned to this class yet.' }}</td></tr>
             @endforelse
         </tbody></table></div>
     </section>

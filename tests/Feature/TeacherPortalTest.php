@@ -67,6 +67,36 @@ class TeacherPortalTest extends TestCase
         ]]];
     }
 
+    public function test_home_overview_and_follow_ups_use_the_selected_level(): void
+    {
+        $this->classes->shouldReceive('forTeacher')->andReturn($this->roster());
+        $ada = $this->results();
+        $ada['rows'][] = array_replace($ada['rows'][0], ['id' => 'level2', 'name' => 'Level 2']);
+        $this->scores->shouldReceive('forPlayer')->with('ada')->andReturn($ada);
+        // Ben played Level 1, but has not started Level 2.
+        $this->scores->shouldReceive('forPlayer')->with('ben')->andReturn($this->results());
+        $this->catalog->shouldReceive('available')->andReturn(['level2' => 'Level 2']);
+        $this->signIn()->get('/teacher?level=level2')->assertOk()->assertSee('Completed Level 2')
+            ->assertSee('Level 2 not started')->assertSee('value="level2" selected', false)
+            ->assertDontSee('Level 1 incomplete')->assertViewHas('summary', ['assigned' => 2, 'started' => 1, 'completed' => 1, 'not_started' => 1, 'unavailable' => 0]);
+    }
+
+    public function test_global_leaderboard_filter_is_independent_from_the_class_level(): void
+    {
+        $this->classes->shouldReceive('forTeacher')->andReturn($this->roster());
+        $this->scores->shouldReceive('forPlayer')->with('ada')->andReturn($this->results());
+        $this->scores->shouldReceive('forPlayer')->with('ben')->andReturn($this->results(false));
+        $this->leaderboards->shouldReceive('levels')->andReturn([
+            ['name' => 'Level 1', 'players' => [['name' => 'Global One', 'highest_score' => 10]]],
+            ['name' => 'Level 2', 'players' => [['name' => 'Global Two', 'highest_score' => 20]]],
+        ]);
+        $this->signIn()->get('/teacher/leaderboard?level=level1&global_level=Level%202')->assertOk()
+            ->assertSee('Ada Player')->assertSee('Global Two')->assertDontSee('Global One')
+            ->assertSee('Class leaderboard level')->assertSee('All-student leaderboard level')
+            ->assertViewHas('level', 'level1')->assertViewHas('globalLevel', 'Level 2')
+            ->assertViewHas('leaders', [['name' => 'Ada Player', 'highest_score' => 27]]);
+    }
+
     public function test_teacher_pages_require_teacher_role_and_verified_account(): void
     {
         foreach (['/teacher', '/teacher/students', '/teacher/progress', '/teacher/leaderboard', '/teacher/students/ada'] as $path) {

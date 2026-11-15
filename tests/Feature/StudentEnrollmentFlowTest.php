@@ -64,6 +64,25 @@ class StudentEnrollmentFlowTest extends TestCase
         $this->post($preview, ['confirmation' => '1'])->assertStatus(409);
     }
 
+    public function test_import_history_remains_after_private_row_report_expires(): void
+    {
+        $response = $this->signIn()->post('/teacher/students/import/preview', ['csv' => UploadedFile::fake()->createWithContent('students.csv', "Fullname,email,block\nJuan,juan@example.com,BSCE 2 A")]);
+        $url = $response->headers->get('Location');
+        $this->get($url)->assertOk()->assertSee('Available until')->assertSee('15 minutes');
+        $this->post($url, ['confirmation' => '1'])->assertRedirect($url);
+        $this->get('/teacher/students/import')->assertOk()->assertSee('Recent import history')->assertSee('Download report');
+        $history = $this->enrollment->importHistory('teacher');
+        $this->assertCount(1, $history);
+        $this->assertSame(1, $history[0]['imported']);
+        $this->assertArrayNotHasKey('email', $history[0]);
+        $this->travel(61)->minutes();
+        $this->get('/teacher/students/import')->assertOk()->assertSee('Report no longer available')->assertDontSee('juan@example.com');
+        $this->get($url.'/report')->assertNotFound();
+        $this->assertCount(1, $this->enrollment->importHistory('teacher'));
+        $this->data['users']['other-teacher'] = ['role' => 'teacher'];
+        $this->assertSame([], $this->enrollment->importHistory('other-teacher'));
+    }
+
     public function test_preview_is_bound_to_teacher_and_other_roles_cannot_import(): void
     {
         $response = $this->signIn()->post('/teacher/students/import/preview', ['csv' => UploadedFile::fake()->createWithContent('students.csv', "Fullname,email,block\nJuan,juan@example.com,BSCE 2 A")]);

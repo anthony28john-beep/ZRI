@@ -91,6 +91,7 @@ Student enrollment is controlled by teacher CSV imports into their assigned bloc
 2. The assigned teacher opens **Import Students**, downloads the template, and prepares a UTF-8 CSV with exactly `Fullname,email,block`. Only the teacher's currently assigned blocks can be imported; ownership is checked again on submission. Column order and header capitalization may vary; quoted names containing commas are supported.
 3. Upload up to 100 students per file (1 MB maximum). Preview names, emails, and matching blocks, then confirm the import. Duplicate emails within the file, missing fields, unknown blocks, and non-student accounts are flagged. Existing website students are skipped without changing credentials, names, membership, or scores.
 4. The teacher downloads the import report and corrects failed rows before uploading again. Reimporting does not create duplicate invitations. To correct a pending invitation, the administrator removes it through **Pending Activations**, then the assigned teacher imports the corrected row.
+   The Import Students page shows the exact preview/report expiry in Asia/Manila: previews last 15 minutes and row reports last one hour. Each teacher's latest 20 import summaries persist privately under `teacher_import_history/{uid}` in Realtime Database, without student names or emails. Reports remain available from history only while their cached data exists. Summary counts reflect the import outcome, not current activation status.
 5. Students choose **New User**, enter the imported email, open the Firebase verification email, and select **Continue** after verification. Only then can they set a password. The emailed activation proof expires after one hour; password setup sessions last 15 minutes. A resend replaces the previous activation proof.
 6. Students sign in using that email/password on the website and game. Their imported block becomes an application requiring teacher acceptance; import does not directly approve membership.
 
@@ -118,6 +119,8 @@ Administrators create blocks and assign teachers through Manage Classes. Approve
 - Leaving or removal preserves the student's account and game records.
 
 Teachers with several classes can switch between them using the class selector. Individual records and removal actions are limited to currently assigned classes. Ownership and membership are checked again when an action is submitted.
+
+Teacher Home lets the teacher select a class and level; overview totals and follow-ups refer to that selected level. Started counts include completed students, while unavailable results are excluded. Teacher Leaderboard has independent class and all-student level filters; changing either preserves the other section's selection. All-student results can show all levels or a single level across all blocks.
 
 Blocks can be deleted only when they have no students, pending applications, imported invitations, or class assignments. Account and block deletion require confirmation. Deleting a teacher retains their classes for reassignment; deleting an account retains its Firestore game records and clears its matching enrollment invitation.
 

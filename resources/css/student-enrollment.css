@@ -11,4 +11,8 @@
 .enrollment-page td { overflow-wrap: anywhere; }
 .enrollment-page details summary { cursor: pointer; }
 .enrollment-blocks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; list-style: none; padding: 0; }
+.enrollment-workflow { display: flex; flex-wrap: wrap; gap: 12px; padding: 0; list-style: none; }
+.enrollment-workflow li { flex: 1 1 180px; padding: 14px 16px; border: 1px solid var(--color-border); border-left: 3px solid var(--color-accent); border-radius: 8px; background: var(--color-surface); color: var(--color-text); font-size: 13px; font-weight: 600; }
+.enrollment-guidance { margin-top: 18px; padding-left: 20px; color: var(--color-muted); font-size: 13px; line-height: 1.8; }
+.enrollment-guidance li + li { margin-top: 12px; }
 .activation-steps { padding-left: 22px; margin-top: 24px; color: var(--color-on-dark); line-height: 2; }
