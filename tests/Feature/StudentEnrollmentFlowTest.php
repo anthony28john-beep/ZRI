@@ -117,6 +117,63 @@ class StudentEnrollmentFlowTest extends TestCase
         $this->assertSame(['scores' => 99], $this->data['unrelated']);
     }
 
+    public function test_pending_activation_search_filters_age_and_status_are_read_only(): void
+    {
+        $this->freezeTime();
+        $this->enrollment->import([$this->row(), $this->row(['fullname' => 'Maria Santos', 'email' => 'maria@example.com'])], 'teacher');
+        $juan = StudentEnrollment::key('juan@example.com');
+        $maria = StudentEnrollment::key('maria@example.com');
+        $this->data['student_invitations'][$juan]['created_at'] = now()->subDays(9)->toIso8601String();
+        $this->data['student_invitations'][$juan]['token_hash'] = 'private-proof-hash';
+        $this->data['student_invitations'][$juan]['expires_at'] = now()->subMinute()->timestamp;
+        $this->data['student_invitations'][$maria]['block_id'] = 'block-b';
+        $this->data['blocks']['block-b'] = ['name' => 'BSCE 2 B'];
+        $before = $this->data;
+        $this->identity['uid'] = 'admin';
+        $this->signIn('admin')->get('/admin/students/activations?search=JUAN&block=block-a&status=link_expired')
+            ->assertOk()->assertSee('juan@example.com')->assertDontSee('maria@example.com')
+            ->assertSee('9 days')->assertSee('Link expired')->assertSee('request a fresh link')
+            ->assertDontSee('private-proof-hash')->assertViewHas('totalPending', 2)
+            ->assertViewHas('needsAttention', 1)->assertViewHas('olderInvitations', 1);
+        $this->get('/admin/students/activations?block=block-b')->assertOk()->assertSee('maria@example.com')->assertDontSee('juan@example.com');
+        $this->get('/admin/students/activations?search=nobody')->assertOk()->assertSee('No students match these filters');
+        $this->get('/admin/students/activations?status=verified')->assertSessionHasErrors('status');
+        $this->assertSame($before, $this->data);
+    }
+
+    public function test_pending_activation_status_does_not_claim_email_delivery_or_verification(): void
+    {
+        $this->freezeTime();
+        $this->enrollment->import([$this->row()], 'teacher');
+        $key = StudentEnrollment::key('juan@example.com');
+        $this->assertSame('not_started', $this->enrollment->pending()[0]['status']);
+        $this->data['student_invitations'][$key]['token_hash'] = 'hash';
+        $this->data['student_invitations'][$key]['expires_at'] = now()->addHour()->timestamp;
+        $this->assertSame('link_requested', $this->enrollment->pending()[0]['status']);
+        $this->data['student_invitations'][$key]['completing'] = now()->timestamp;
+        $this->identity['uid'] = 'admin';
+        $this->signIn('admin')->get('/admin/students/activations')->assertOk()->assertSee('Finishing setup')
+            ->assertDontSee('Confirm removal')->assertSee('does not confirm email delivery');
+        $this->delete('/admin/students/invitations/'.$key, ['confirmation' => '1'])->assertStatus(409);
+        $this->data['student_invitations'][$key]['completing'] = now()->subMinutes(3)->timestamp;
+        $this->assertSame('interrupted', $this->enrollment->pending()[0]['status']);
+        unset($this->data['blocks']['block-a']);
+        $this->assertSame('block_unavailable', $this->enrollment->pending()[0]['status']);
+        $this->data['student_invitations'][$key]['created_at'] = 'invalid date';
+        $this->assertNull($this->enrollment->pending()[0]['age_days']);
+    }
+
+    public function test_pending_activation_pagination_preserves_filters(): void
+    {
+        $this->enrollment->import(array_map(fn ($i) => $this->row(['email' => 'learner'.$i.'@example.com']), range(1, 21)), 'teacher');
+        $this->identity['uid'] = 'admin';
+        $this->signIn('admin')->get('/admin/students/activations?search=learner&block=block-a&status=not_started')
+            ->assertOk()->assertViewHas('pending', fn ($rows) => $rows->count() === 20 && $rows->total() === 21)
+            ->assertSee('search=learner')->assertSee('block=block-a')->assertSee('status=not_started')->assertSee('page=2');
+        $this->get('/admin/students/activations?search=learner&block=block-a&status=not_started&page=2')
+            ->assertOk()->assertViewHas('pending', fn ($rows) => $rows->count() === 1)->assertSee('Page 2 of 2');
+    }
+
     public function test_teacher_cannot_read_global_pending_activations_or_remove_invitations(): void
     {
         $this->enrollment->import([$this->row()], 'teacher');

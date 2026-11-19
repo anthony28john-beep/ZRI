@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\AccountException;
+use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -31,8 +32,30 @@ class StudentEnrollment
         $data = $this->read();
 
         return collect($data['student_invitations'] ?? [])->filter(fn ($row) => ($row['status'] ?? '') === 'pending')
-            ->map(fn ($row, $id) => ['id' => $id, 'fullname' => $row['fullname'], 'email' => $row['email'],
-                'block' => $data['blocks'][$row['block_id']]['name'] ?? 'Block unavailable'])->values()->all();
+            ->map(function ($row, $id) use ($data) {
+                $blockAvailable = isset($data['blocks'][$row['block_id']]['name']);
+                $completing = $row['completing'] ?? 0;
+                $status = match (true) {
+                    ! $blockAvailable => 'block_unavailable',
+                    $completing > now()->subMinutes(2)->timestamp => 'completing',
+                    $completing > 0 => 'interrupted',
+                    ! empty($row['token_hash']) && ($row['expires_at'] ?? 0) <= now()->timestamp => 'link_expired',
+                    ! empty($row['token_hash']) => 'link_requested',
+                    default => 'not_started',
+                };
+                try {
+                    $created = empty($row['created_at']) ? null : CarbonImmutable::parse($row['created_at']);
+                } catch (Throwable) {
+                    $created = null;
+                }
+
+                return ['id' => $id, 'fullname' => $row['fullname'], 'email' => $row['email'],
+                    'block_id' => $row['block_id'],
+                    'block' => $data['blocks'][$row['block_id']]['name'] ?? 'Block unavailable',
+                    'status' => $status, 'created_at' => $created?->toIso8601String(),
+                    'age_days' => $created ? max(0, (int) $created->diffInDays(now(), false)) : null,
+                    'can_remove' => $completing <= now()->subMinutes(2)->timestamp];
+            })->sortBy('created_at')->values()->all();
     }
 
     public function blocksForTeacher(string $teacher): array

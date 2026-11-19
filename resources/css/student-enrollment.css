@@ -16,3 +16,12 @@
 .enrollment-guidance { margin-top: 18px; padding-left: 20px; color: var(--color-muted); font-size: 13px; line-height: 1.8; }
 .enrollment-guidance li + li { margin-top: 12px; }
 .activation-steps { padding-left: 22px; margin-top: 24px; color: var(--color-on-dark); line-height: 2; }
+.activation-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.activation-summary > div { display: grid; gap: 8px; padding: 22px; border: 1px solid var(--color-border); border-top: 3px solid var(--color-accent); border-radius: 12px; background: var(--color-surface); }
+.activation-summary strong { font-size: 30px; color: var(--color-text); }
+.activation-summary span, .activation-detail { font-size: 12px; color: var(--color-muted); line-height: 1.6; }
+.activation-detail { display: block; margin-top: 8px; font-weight: 400; }
+.activation-filters { margin-top: 20px; }
+.activation-filters .button { width: auto; }
+.activation-pagination { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 24px; }
+@media (max-width: 550px) { .activation-summary { grid-template-columns: 1fr; } }
