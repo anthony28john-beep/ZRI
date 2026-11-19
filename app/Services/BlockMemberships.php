@@ -115,6 +115,41 @@ class BlockMemberships
         });
     }
 
+    public function pendingCountForTeacher(string $uid): int
+    {
+        return $this->pendingNotificationsForTeacher($uid)['count'];
+    }
+
+    public function pendingNotificationsForTeacher(string $uid): array
+    {
+        $data = $this->read();
+        abort_unless(($data['users'][$uid]['role'] ?? null) === 'teacher', 403);
+        $blocks = [];
+        foreach ($data['blocks'] ?? [] as $block => $_) {
+            if (in_array($uid, $this->teachers($data, (string) $block), true)) {
+                $blocks[$block] = true;
+            }
+        }
+
+        $pending = array_filter($data['users'] ?? [], function ($profile) use ($blocks) {
+            $application = is_array($profile) ? ($profile['block_application'] ?? null) : null;
+
+            return ($profile['role'] ?? null) === 'student' && is_array($application)
+                && is_string($application['id'] ?? null) && is_string($application['block_id'] ?? null)
+                && isset($blocks[$application['block_id']]);
+        });
+        $items = collect($pending)->sortByDesc('block_application.requested_at')->take(5)
+            ->map(function ($profile, $student) use ($data) {
+                $application = $profile['block_application'];
+
+                return ['name' => $this->names->forProfile((string) $student, $profile),
+                    'block' => $data['blocks'][$application['block_id']]['name'],
+                    'id' => $application['id']];
+            })->values()->all();
+
+        return ['count' => count($pending), 'items' => $items];
+    }
+
     public function forTeacher(string $uid): array
     {
         $data = $this->read();
@@ -157,6 +192,13 @@ class BlockMemberships
                     $this->invalid('This block is no longer available.');
                 }
                 $data['users'][$student]['block_id'] = $block;
+                // Store the acceptance alongside membership so retries cannot create duplicate notices.
+                $data['student_notifications'][$student][$applicationId] = [
+                    'type' => 'block_accepted', 'block' => $data['blocks'][$block]['name'],
+                    'created_at' => now()->toIso8601String(),
+                ];
+                $data['student_notifications'][$student] = collect($data['student_notifications'][$student])
+                    ->sortByDesc('created_at')->take(20)->all();
             }
             unset($data['users'][$student]['block_application']);
 

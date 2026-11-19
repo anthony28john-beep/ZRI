@@ -44,7 +44,7 @@ class AdminAccounts
         $target = $this->target($uid, $administrator);
         // Read relationships before the irreversible Auth operation. Failed reads stop deletion.
         $classes = $this->read('classes');
-        $updates = ['users/'.$uid => null, 'teacher_classes/'.$uid => null];
+        $updates = ['users/'.$uid => null, 'teacher_classes/'.$uid => null, 'student_notifications/'.$uid => null];
         if ($target['email'] !== '') {
             $invitationPath = 'student_invitations/'.StudentEnrollment::key($target['email']);
             $invitation = $this->read($invitationPath);
@@ -80,6 +80,8 @@ class AdminAccounts
         }
         try {
             Cache::forget('teacher-results:'.hash('sha256', $uid));
+            Cache::forget('student-notification-scores:v1:'.hash('sha256', $uid));
+            Cache::forget('student-notification-attempts:v1:'.hash('sha256', $uid));
         } catch (Throwable $exception) {
             $this->logFailure('delete_cached_results', $exception);
         }

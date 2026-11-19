@@ -3,12 +3,16 @@
 namespace App\Providers;
 
 use App\Exceptions\AccountException;
+use App\Exceptions\ClassroomUnavailable;
+use App\Services\BlockMemberships;
 use App\Services\FirebaseServiceAccount;
 use App\Services\FirestoreCredentials;
+use App\Services\StudentNotifications;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as LaravelAuth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Kreait\Firebase\Contract\Auth;
@@ -43,6 +47,30 @@ class AppServiceProvider extends ServiceProvider
     {
         LaravelAuth::viaRequest('firebase', fn (Request $request) => $request->attributes->get('firebase_identity'));
         Password::defaults(fn () => Password::min(8)->letters()->numbers());
+        View::composer('partials.navbar', function ($view) {
+            if (($view->getData()['portalRole'] ?? null) === 'student' && request()->user()?->role === 'student') {
+                try {
+                    $notifications = $this->app->make(StudentNotifications::class)->forStudent(request()->user()->uid);
+                } catch (AccountException) {
+                    $notifications = ['count' => 0, 'items' => [], 'unavailable' => ['Notifications are temporarily unavailable.']];
+                }
+                $view->with('studentNotifications', $notifications);
+
+                return;
+            }
+            if (($view->getData()['portalRole'] ?? null) !== 'teacher' || request()->user()?->role !== 'teacher') {
+                return;
+            }
+            $data = $view->getData();
+            try {
+                $notifications = request()->routeIs('teacher.applications') && empty($data['unavailable']) && isset($data['applications'])
+                    ? ['count' => count($data['applications']), 'items' => collect($data['applications'])->sortByDesc('requested_at')->take(5)->values()->all()]
+                    : $this->app->make(BlockMemberships::class)->pendingNotificationsForTeacher(request()->user()->uid);
+            } catch (ClassroomUnavailable|AccountException $exception) {
+                $notifications = ['count' => null, 'items' => []];
+            }
+            $view->with('pendingApplicationCount', $notifications['count'])->with('applicationNotifications', $notifications['items']);
+        });
         RateLimiter::for('login', fn (Request $request) => [
             Limit::perMinute(30)->by('login-ip:'.$request->ip()),
             Limit::perMinute(5)->by('login:'.hash('sha256', strtolower((string) $request->input('email')).'|'.$request->ip())),

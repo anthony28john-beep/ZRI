@@ -33,6 +33,7 @@ trait EnrollmentDatabase
         });
         $database->shouldReceive('runTransaction')->andReturnUsing(fn ($callback) => $callback($transaction));
         $this->enrollment = new StudentEnrollment($database);
+        $this->app->instance(Database::class, $database);
         $this->app->instance(StudentEnrollment::class, $this->enrollment);
     }
 

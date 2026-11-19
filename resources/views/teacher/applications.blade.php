@@ -11,7 +11,7 @@
         <section class="tp-panel"><div class="tp-section-heading"><h2>Pending requests</h2><span class="tp-tag">{{ count($applications) }} applications</span></div>
             <div class="tp-table-wrap"><table class="tp-table"><thead><tr><th scope="col">Student</th><th scope="col">Block</th><th scope="col">Actions</th></tr></thead><tbody>
                 @forelse ($applications as $application)
-                    <tr><td>{{ $application['name'] }}</td><td>{{ $application['block'] }} @if (!$application['can_accept'])<span class="tp-caption">Already in a block</span>@endif</td><td><div class="block-review-actions">
+                    <tr id="application-{{ $application['id'] }}"><td>{{ $application['name'] }}</td><td>{{ $application['block'] }} @if (!$application['can_accept'])<span class="tp-caption">Already in a block</span>@endif</td><td><div class="block-review-actions">
                         <form method="POST" action="{{ route('teacher.applications.accept', ['student' => $application['student_uid'], 'application' => $application['id']]) }}">@csrf<button type="submit" class="button" @disabled(!$application['can_accept'])>Accept</button></form>
                         <form method="POST" action="{{ route('teacher.applications.decline', ['student' => $application['student_uid'], 'application' => $application['id']]) }}">@csrf<button type="submit" class="text-button">Decline</button></form>
                     </div></td></tr>

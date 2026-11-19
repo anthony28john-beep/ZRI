@@ -27,6 +27,7 @@ class AccountSecurityTest extends TestCase
     {
         parent::setUp();
         $memberships = Mockery::mock(BlockMemberships::class);
+        $memberships->shouldReceive('pendingNotificationsForTeacher')->andReturn(['count' => 0, 'items' => []])->byDefault();
         $memberships->shouldReceive('forStudent')->andReturn(['current' => null, 'pending' => null, 'available' => []]);
         $this->app->instance(BlockMemberships::class, $memberships);
         $classes = Mockery::mock(Classrooms::class);

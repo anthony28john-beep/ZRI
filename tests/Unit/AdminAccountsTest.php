@@ -75,7 +75,7 @@ class AdminAccountsTest extends TestCase
         $this->read('classes', [self::CLASS_ID => ['teacher_uid' => 'victim', 'students' => ['victim' => true, 'other' => true]]]);
         $this->auth->shouldReceive('deleteUser')->once()->with('victim')->globally()->ordered();
         $this->root()->shouldReceive('update')->once()->with([
-            'users/victim' => null, 'teacher_classes/victim' => null,
+            'users/victim' => null, 'teacher_classes/victim' => null, 'student_notifications/victim' => null,
             'classes/'.self::CLASS_ID.'/teacher_uid' => null,
             'classes/'.self::CLASS_ID.'/students/victim' => null,
         ])->globally()->ordered();
@@ -160,7 +160,7 @@ class AdminAccountsTest extends TestCase
         $this->read('users/victim', ['role' => 'student']);
         $this->read('classes', []);
         $this->auth->shouldReceive('deleteUser')->with('victim')->andThrow(new UserNotFound('Missing user'));
-        $this->root()->shouldReceive('update')->once()->with(['users/victim' => null, 'teacher_classes/victim' => null]);
+        $this->root()->shouldReceive('update')->once()->with(['users/victim' => null, 'teacher_classes/victim' => null, 'student_notifications/victim' => null]);
         $this->accounts->delete('victim', 'admin');
     }
 
@@ -171,7 +171,7 @@ class AdminAccountsTest extends TestCase
         $path = 'student_invitations/'.StudentEnrollment::key('s@example.com');
         $this->read($path, ['uid' => 'victim', 'status' => 'active']);
         $this->auth->shouldReceive('deleteUser')->once()->with('victim');
-        $this->root()->shouldReceive('update')->once()->with(['users/victim' => null, 'teacher_classes/victim' => null, $path => null]);
+        $this->root()->shouldReceive('update')->once()->with(['users/victim' => null, 'teacher_classes/victim' => null, 'student_notifications/victim' => null, $path => null]);
         $this->accounts->delete('victim', 'admin');
     }
 }

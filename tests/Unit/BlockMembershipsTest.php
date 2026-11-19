@@ -55,10 +55,49 @@ class BlockMembershipsTest extends TestCase
         $this->assertSame([], $this->memberships->forTeacher('other'));
         $application = $this->memberships->forTeacher('teacher')[0];
         $this->memberships->review('teacher', 'student', $application['id'], true);
+        $this->assertSame('Block A', $this->data['student_notifications']['student'][$application['id']]['block']);
+        $this->assertSame('block_accepted', $this->data['student_notifications']['student'][$application['id']]['type']);
         $this->assertSame('a', $this->data['users']['student']['block_id']);
         $this->assertArrayNotHasKey('block_application', $this->data['users']['student']);
         $this->assertSame('Block A', $this->memberships->forStudent('student')['current']['name']);
         $this->assertSame(['preserve' => true], $this->data['unrelated']);
+    }
+
+    public function test_notification_count_tracks_only_the_current_teachers_pending_applications(): void
+    {
+        $this->assertSame(0, $this->memberships->pendingCountForTeacher('teacher'));
+        $this->memberships->apply('student', 'a');
+        // Multiple classes for the same block must not duplicate a student's request.
+        $this->data['classes']['duplicate'] = ['block_id' => 'a', 'teacher_uid' => 'teacher'];
+        $this->assertSame(1, $this->memberships->pendingCountForTeacher('teacher'));
+        $this->assertSame(0, $this->memberships->pendingCountForTeacher('other'));
+        $this->memberships->cancel('student');
+        $this->assertSame(0, $this->memberships->pendingCountForTeacher('teacher'));
+        $this->memberships->apply('student', 'a');
+        $id = $this->data['users']['student']['block_application']['id'];
+        $this->memberships->review('teacher', 'student', $id, false);
+        $this->assertSame(0, $this->memberships->pendingCountForTeacher('teacher'));
+        $this->memberships->apply('student', 'a');
+        $id = $this->data['users']['student']['block_application']['id'];
+        $this->memberships->review('teacher', 'student', $id, true);
+        $this->assertSame(0, $this->memberships->pendingCountForTeacher('teacher'));
+        $this->assertHttpError(403, fn () => $this->memberships->pendingCountForTeacher('student'));
+    }
+
+    public function test_notification_preview_is_limited_to_five_newest_requests_for_owned_blocks(): void
+    {
+        for ($i = 1; $i <= 7; $i++) {
+            $this->data['users']['applicant-'.$i] = ['role' => 'student', 'fullname' => 'Learner '.$i,
+                'block_application' => ['id' => 'request-'.$i, 'block_id' => 'a', 'requested_at' => now()->subMinutes(8 - $i)->toIso8601String()]];
+        }
+        $this->data['users']['outsider'] = ['role' => 'student', 'fullname' => 'Other block student',
+            'block_application' => ['id' => 'other-request', 'block_id' => 'b', 'requested_at' => now()->toIso8601String()]];
+        $summary = $this->memberships->pendingNotificationsForTeacher('teacher');
+        $this->assertSame(7, $summary['count']);
+        $this->assertCount(5, $summary['items']);
+        $this->assertSame(['Learner 7', 'Learner 6', 'Learner 5', 'Learner 4', 'Learner 3'], array_column($summary['items'], 'name'));
+        $this->assertSame('Block A', $summary['items'][0]['block']);
+        $this->assertSame(0, $this->writes);
     }
 
     public function test_teacher_applications_show_the_student_full_name(): void

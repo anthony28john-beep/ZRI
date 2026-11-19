@@ -6,6 +6,7 @@ use App\Exceptions\ClassroomUnavailable;
 use App\Services\BlockMemberships;
 use App\Services\Classrooms;
 use App\Services\FirebaseAccounts;
+use App\Services\StudentNotifications;
 use Mockery;
 use Tests\TestCase;
 
@@ -27,6 +28,7 @@ class BlockMembershipTest extends TestCase
         $accounts->shouldReceive('identity')->with('signed-in')->andReturnUsing(fn () => $this->identity);
         $this->app->instance(FirebaseAccounts::class, $accounts);
         $this->memberships = Mockery::mock(BlockMemberships::class);
+        $this->memberships->shouldReceive('pendingNotificationsForTeacher')->andReturn(['count' => 0, 'items' => []])->byDefault();
         $this->app->instance(BlockMemberships::class, $this->memberships);
     }
 
@@ -35,6 +37,21 @@ class BlockMembershipTest extends TestCase
         $this->identity['role'] = $role;
 
         return $this->withSession(['firebase_user' => $this->identity + ['authenticated_at' => now()->timestamp]]);
+    }
+
+    public function test_student_notification_dropdown_shows_block_acceptance_and_completed_level_scores(): void
+    {
+        $notifications = Mockery::mock(StudentNotifications::class);
+        $notifications->shouldReceive('forStudent')->once()->with('signed-in')->andReturn([
+            'count' => 2, 'unavailable' => [], 'items' => [
+                ['title' => 'Block application accepted', 'message' => 'You have been accepted into BSIT 1A.', 'icon' => 'users', 'url' => route('student.account')],
+                ['title' => 'Level 2 completed!', 'message' => 'You scored 35 points on this run.', 'icon' => 'trophy', 'url' => route('student.scoreboard')],
+            ],
+        ]);
+        $this->app->instance(StudentNotifications::class, $notifications);
+        $this->signIn()->get('/student/about-game')->assertOk()->assertSee('data-student-notifications', false)
+            ->assertSee('Block application accepted')->assertSee('You have been accepted into BSIT 1A.')
+            ->assertSee('Level 2 completed!')->assertSee('You scored 35 points on this run.')->assertSee('View scoreboard');
     }
 
     public function test_current_members_see_their_block_and_leave_controls(): void

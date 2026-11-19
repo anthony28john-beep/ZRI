@@ -34,6 +34,30 @@
 .workspace-navbar :is(a, summary, button):focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 .workspace-account[open] .navigation-chevron { transform: rotate(180deg); }
 .workspace-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 20px; color: var(--color-on-accent); background: var(--color-accent); font-size: 10px; font-weight: 750; }
+.workspace-notification-dropdown { position: relative; flex-shrink: 0; }
+.workspace-notifications { position: relative; display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 1px solid color-mix(in srgb, var(--color-nav-text) 20%, transparent); border-radius: 50%; color: var(--color-nav-text); text-decoration: none; list-style: none; cursor: pointer; }
+.workspace-notifications::-webkit-details-marker { display: none; }
+.workspace-notification-dropdown[open] > summary { color: var(--color-accent); background: var(--color-nav-hover); border-color: var(--color-accent); }
+.workspace-notification-panel { position: absolute; top: calc(100% + 14px); right: 0; width: min(380px, calc(100vw - 32px)); max-height: 70dvh; overflow-y: auto; padding: 16px 10px 8px; border: 1px solid var(--color-border); border-radius: 16px; color: var(--color-text); background: var(--color-surface); box-shadow: 0 16px 40px rgba(24, 28, 32, .22); }
+.workspace-notification-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 2px 10px 12px; }
+.workspace-notification-heading h2 { margin: 0; font-size: 21px; color: var(--color-text); }
+.workspace-notification-heading > span { color: var(--color-muted); font-size: 12px; }
+.workspace-notification-caption { padding: 4px 10px 10px; margin: 0; font-size: 12px; line-height: 1.6; color: var(--color-muted); }
+.workspace-notification-list { list-style: none; margin: 0; padding: 0; }
+.workspace-notification-list a { display: flex; align-items: center; gap: 12px; padding: 14px 10px; border-radius: 10px; color: var(--color-text); text-decoration: none; }
+.workspace-notification-list a:hover { background: var(--color-surface-soft); }
+.workspace-notification-avatar { display: grid; place-items: center; flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%; color: var(--color-on-accent); background: var(--color-accent); }
+.workspace-notification-list a > span:nth-child(2) { display: grid; gap: 4px; min-width: 0; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.workspace-notification-list small { font-size: 11px; color: var(--color-link); }
+.workspace-notification-dot { width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; background: var(--color-accent); margin-left: auto; }
+.workspace-notification-empty { display: grid; justify-items: center; gap: 10px; margin: 0; padding: 24px 14px; text-align: center; font-size: 13px; line-height: 1.6; color: var(--color-muted); }
+.workspace-notification-empty p { margin: 0; }
+.workspace-notification-footer { display: flex; justify-content: center; gap: 12px; padding: 16px 10px 10px; border-top: 1px solid var(--color-border); color: var(--color-link); font-size: 13px; font-weight: 600; text-decoration: none; }
+.tp-table tr:target { outline: 2px solid var(--color-accent); outline-offset: -2px; background: var(--color-surface-soft); scroll-margin-top: 24px; }
+.workspace-notifications:hover { background: var(--color-nav-hover); }
+.workspace-notification-count { position: absolute; top: -6px; right: -6px; min-width: 20px; padding: 3px 5px; border-radius: 12px; color: var(--color-on-accent); background: var(--color-accent); text-align: center; font-size: 10px; font-weight: 750; }
+.workspace-teacher-nav .workspace-account { margin-left: 0; }
+@media (max-width: 600px) { .workspace-teacher-nav { flex-wrap: wrap; } .workspace-teacher-nav .workspace-brand { flex-basis: 100%; } .workspace-teacher-nav .workspace-mobile-menu { margin-left: 0; } .workspace-teacher-nav .workspace-notification-dropdown { margin-left: auto; } .workspace-notification-panel { position: fixed; top: 132px; right: 16px; max-height: calc(100dvh - 148px); } }
 @media (max-width: 1359px) {
     .workspace-navbar-inner { gap: 16px; min-height: 78px; padding: 12px 24px; }
     .workspace-navbar .workspace-desktop-links { display: none; }

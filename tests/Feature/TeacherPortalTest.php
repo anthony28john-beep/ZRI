@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Exceptions\ClassroomUnavailable;
 use App\Exceptions\ScoreboardUnavailable;
+use App\Services\BlockMemberships;
 use App\Services\Classrooms;
 use App\Services\FirebaseAccounts;
 use App\Services\FirestoreLeaderboards;
@@ -24,11 +25,16 @@ class TeacherPortalTest extends TestCase
 
     private $catalog;
 
+    private $memberships;
+
     private array $identity;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->memberships = Mockery::mock(BlockMemberships::class);
+        $this->memberships->shouldReceive('pendingNotificationsForTeacher')->andReturn(['count' => 0, 'items' => []])->byDefault();
+        $this->app->instance(BlockMemberships::class, $this->memberships);
         $this->identity = ['uid' => 'teacher-one', 'name' => 'Teacher One', 'email' => 'teacher@example.com', 'role' => 'teacher', 'email_verified' => true, 'must_change_password' => false, 'credential_version' => 'v1'];
         $accounts = Mockery::mock(FirebaseAccounts::class);
         $accounts->shouldReceive('identity')->with('teacher-one')->andReturnUsing(fn () => $this->identity);
@@ -65,6 +71,29 @@ class TeacherPortalTest extends TestCase
             'id' => 'level1', 'name' => 'Level 1', 'best_score' => $played ? 27 : null, 'best_grade' => $played ? 'A' : null,
             'best_time' => null, 'attempts' => $played ? 1 : 0, 'completed' => $played, 'status' => $played ? 'Completed' : 'Not played', 'last_played' => null,
         ]]];
+    }
+
+    public function test_teacher_navigation_shows_pending_application_notifications_and_refreshes_the_count(): void
+    {
+        $this->classes->shouldReceive('forTeacher')->andReturn([]);
+        $this->memberships->shouldReceive('pendingNotificationsForTeacher')->with('teacher-one')->twice()->andReturn(
+            ['count' => 3, 'items' => [['id' => 'request-ada', 'name' => 'Ada Learner', 'block' => 'BSCE 2 A']]],
+            ['count' => 0, 'items' => []]
+        );
+        $this->signIn()->get('/teacher')->assertOk()->assertSee('3 pending block applications. Review applications.')
+            ->assertSee('data-application-notifications', false)->assertSee('workspace-notification-panel')
+            ->assertSee('Ada Learner')->assertSee('wants to join')->assertSee('BSCE 2 A')
+            ->assertSee(route('teacher.applications').'#application-request-ada')->assertSee('View all block applications');
+        $this->get('/teacher')->assertOk()->assertSee('No pending block applications. View applications.')
+            ->assertSee("You're all caught up", false)->assertDontSee('Ada Learner')->assertDontSee('3 pending block applications');
+    }
+
+    public function test_notification_outage_does_not_break_the_teacher_home_or_claim_zero_requests(): void
+    {
+        $this->classes->shouldReceive('forTeacher')->andReturn([]);
+        $this->memberships->shouldReceive('pendingNotificationsForTeacher')->andThrow(new ClassroomUnavailable('Unavailable'));
+        $this->signIn()->get('/teacher')->assertOk()->assertSee('Block application notifications unavailable.')
+            ->assertDontSee('No pending block applications. View applications.');
     }
 
     public function test_home_overview_and_follow_ups_use_the_selected_level(): void

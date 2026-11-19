@@ -1,6 +1,7 @@
 @props(['name' => 'home'])
 <svg {{ $attributes->class(['workspace-icon']) }} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     @switch($name)
+        @case('bell') <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/> @break
         @case('moon') <path d="M21 13a9 9 0 0 1-10-10A9 9 0 1 0 21 13Z"/> @break
         @case('home') <path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/> @break
         @case('download') <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/> @break
