@@ -84,9 +84,10 @@ class BlockRegistrationTest extends TestCase
             ->assertSee('Current assignments')->assertSee('Move students to another block');
     }
 
-    public function test_admin_creates_teachers_only_and_students_use_csv(): void
+    public function test_admin_can_create_students_and_teachers_without_bypassing_block_approval(): void
     {
-        $this->signIn()->post('/admin/users', $this->registration() + ['role' => 'student'])->assertSessionHasErrors('role');
+        $this->accounts->shouldReceive('create')->once()->with(Mockery::on(fn ($data) => $data['role'] === 'student' && ! isset($data['block_id'])), 'admin');
+        $this->signIn()->post('/admin/users', $this->registration() + ['role' => 'student'])->assertRedirect('/admin/users/create')->assertSessionHasNoErrors();
         $this->accounts->shouldReceive('create')->once()->with(Mockery::on(fn ($data) => $data['role'] === 'teacher' && ! isset($data['block_id'])), 'admin');
         $this->post('/admin/users', $this->registration() + ['role' => 'teacher'])->assertSessionHasNoErrors();
     }

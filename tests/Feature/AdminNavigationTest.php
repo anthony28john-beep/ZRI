@@ -47,7 +47,8 @@ class AdminNavigationTest extends TestCase
     {
         $this->signIn()->get('/admin/users/create')->assertOk()->assertSee('Add New Account')->assertSee('Pending Activations')
             ->assertSee('name="name"', false)->assertSee('name="email"', false)->assertSee('name="role"', false)
-            ->assertDontSee('name="block_id"', false)->assertDontSee('value="student"', false)->assertSee('name="password"', false)->assertSee('name="password_confirmation"', false)
+            ->assertDontSee('name="block_id"', false)->assertSee('value="student"', false)->assertSee('name="password"', false)->assertSee('name="password_confirmation"', false)
+            ->assertDontSee('class="admin-profile"', false)->assertDontSee('Account administrator')->assertSee('Account creation guidance')
             ->assertSee('action="'.route('admin.users.store').'"', false)
             ->assertSee('href="'.route('admin.users.create').'" class="admin-nav-link is-active"', false);
     }
@@ -74,7 +75,7 @@ class AdminNavigationTest extends TestCase
     {
         $this->classes->shouldReceive('blocks')->andThrow(new ClassroomUnavailable('Private details'));
         $this->signIn()->get('/dashboard')->assertOk()->assertSee('Block information temporarily unavailable')->assertDontSee('Private details');
-        $this->get('/admin/users/create')->assertOk()->assertSee('Create a teacher account')
+        $this->get('/admin/users/create')->assertOk()->assertSee('Create an account')
             ->assertSee('Temporary password')->assertDontSee('Private details');
     }
 }

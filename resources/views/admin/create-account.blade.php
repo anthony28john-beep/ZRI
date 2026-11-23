@@ -11,9 +11,9 @@
     <main class="admin-container admin-main">
         <div class="admin-page-heading">
             <div class="admin-eyebrow">PEOPLE &amp; ACCESS</div>
-            <h1>Create a teacher account</h1>
+            <h1>Create an account</h1>
             <p class="admin-description">
-                Add teachers here. Assigned teachers import their student lists, and students activate their own accounts.
+                Create student or teacher accounts with a temporary password. Users replace it and verify their email before accessing their dashboard.
             </p>
         </div>
 
@@ -33,28 +33,12 @@
         </div>
 
         <div class="admin-grid">
-            <aside class="admin-sidebar" aria-label="Administrator information">
-                <section class="admin-profile" aria-label="Your account">
-                    <div class="admin-avatar" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($user['name'], 0, 1)) }}</div>
-                    <div class="admin-profile-name">{{ $user['name'] }}</div>
-                    <p class="admin-profile-label">Account administrator</p>
-                    <div class="role-badge">{{ $user['role'] }}</div>
-                    <form action="{{ route('logout') }}" method="POST" class="admin-logout">
-                        @csrf
-                        <button type="submit" class="admin-logout-button">
-                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 5H4v14h5M14 8l4 4-4 4M8 12h12"/>
-                            </svg>
-                            Log Out
-                        </button>
-                    </form>
-                </section>
-
+            <aside class="admin-sidebar" aria-label="Account creation guidance">
                 <section class="admin-guide" aria-labelledby="account-types-heading">
                     <h2 id="account-types-heading">Account types</h2>
                     <div class="admin-guide-item">
                         <div class="admin-guide-role"><span aria-hidden="true"></span>Student</div>
-                        <p>Teachers import their student lists. Monitor pending activations while students verify their email and set a password.</p>
+                        <p>Create an individual student here, or let teachers import students through CSV. Students created here sign in with their temporary password, complete setup, then apply to a block for teacher approval.</p>
                         <a class="tp-link" href="{{ route('admin.students.activations') }}">Pending Activations &rarr;</a>
                     </div>
                     <div class="admin-guide-item">
@@ -74,7 +58,7 @@
                     </div>
                     <div>
                         <h2 id="new-account-heading">Add New Account</h2>
-                        <p>Create a teacher account with a temporary password.</p>
+                        <p>Choose an account type and provide temporary sign-in credentials.</p>
                     </div>
                 </div>
 
@@ -97,7 +81,8 @@
                                 <div class="form-group admin-field-wide">
                                     <label for="role">Account type</label>
                                     <select id="role" name="role" required>
-                                        <option value="teacher">Teacher</option>
+                                        <option value="teacher" @selected(old('role', 'teacher') === 'teacher')>Teacher</option>
+                                        <option value="student" @selected(old('role') === 'student')>Student</option>
                                     </select>
                 <x-field-error name="role" />
                                 </div>

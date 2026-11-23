@@ -60,7 +60,7 @@ class AdminUserController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:254'],
-            'role' => ['required', 'in:teacher'],
+            'role' => ['required', 'in:student,teacher'],
             'password' => ['required', 'string', 'max:128', 'confirmed', Password::defaults()],
         ]);
         $accounts->create($validated, $request->user()->uid);

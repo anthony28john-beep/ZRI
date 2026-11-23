@@ -92,11 +92,29 @@ class FirebaseAccountsTest extends TestCase
         $this->accounts->create(['name' => 'Test', 'email' => 'test@example.com', 'password' => 'Secret123', 'role' => 'teacher'], 'admin-user');
     }
 
-    public function test_administrator_cannot_bypass_student_import_with_a_password(): void
+    public function test_admin_created_students_have_full_names_and_must_verify_and_replace_the_temporary_password(): void
     {
+        $invitation = Mockery::mock(Reference::class);
+        $this->database->shouldReceive('getReference')->with('student_invitations/'.StudentEnrollment::key('test@example.com'))->andReturn($invitation);
+        $invitation->shouldReceive('getValue')->once()->andReturn(null);
+        $this->auth->shouldReceive('createUser')->once()->with(Mockery::on(fn ($data) => $data['emailVerified'] === false && $data['password'] === 'Secret123'))
+            ->andReturn($this->record(['emailVerified' => false]));
+        $this->reference->shouldReceive('set')->once()->with(Mockery::on(fn ($profile) => $profile['role'] === 'student' && $profile['fullname'] === 'Test Student'
+            && $profile['created_by'] === 'admin' && $profile['must_change_password']
+            && $profile['temporary_password_version'] !== '' && ! isset($profile['block_id'])
+        ));
+        $this->accounts->create(['name' => 'Test Student', 'email' => 'test@example.com', 'password' => 'Secret123', 'role' => 'student'], 'admin');
+    }
+
+    public function test_pending_imported_students_cannot_get_a_conflicting_manual_account(): void
+    {
+        $invitation = Mockery::mock(Reference::class);
+        $this->database->shouldReceive('getReference')->with('student_invitations/'.StudentEnrollment::key('test@example.com'))->andReturn($invitation);
+        $invitation->shouldReceive('getValue')->once()->andReturn(['status' => 'pending']);
         $this->auth->shouldNotReceive('createUser');
         $this->expectException(AccountException::class);
-        $this->accounts->create(['role' => 'student'], 'admin');
+        $this->expectExceptionMessage('This student already has a pending invitation.');
+        $this->accounts->create(['name' => 'Test Student', 'email' => 'test@example.com', 'password' => 'Secret123', 'role' => 'student'], 'admin');
     }
 
     public function test_missing_profile_requires_import_and_keeps_existing_uid_and_password(): void

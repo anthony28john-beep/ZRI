@@ -49,11 +49,17 @@ class FirebaseAccounts
 
     public function create(#[\SensitiveParameter] array $data, ?string $createdBy = null): void
     {
-        if (! $createdBy || ($data['role'] ?? null) !== 'teacher') {
-            throw new AccountException('Teachers import students through CSV. This form creates teacher accounts only.', 'role');
+        if (! $createdBy || ! in_array($data['role'] ?? null, ['student', 'teacher'], true)) {
+            throw new AccountException('Only administrators can create student or teacher accounts through this form.', 'role');
         }
         $uid = null;
         try {
+            if ($data['role'] === 'student') {
+                $invitation = $this->database->getReference('student_invitations/'.StudentEnrollment::key($data['email']))->getValue();
+                if (($invitation['status'] ?? null) === 'pending') {
+                    throw new AccountException('This student already has a pending invitation. Ask them to activate through New User, or remove the invitation in Pending Activations before creating their account here.', 'email');
+                }
+            }
             $record = $this->auth->createUser([
                 'email' => $data['email'], 'password' => $data['password'],
                 'displayName' => $data['name'], 'emailVerified' => false, 'disabled' => false,
@@ -61,11 +67,13 @@ class FirebaseAccounts
             $uid = $record->uid;
             $this->database->getReference('users/'.$uid)->set([
                 'uid' => $uid, 'name' => $data['name'], 'fullname' => $data['name'], 'email' => $record->email,
-                'role' => 'teacher',
+                'role' => $data['role'],
                 'created_at' => now()->toIso8601String(), 'created_by' => $createdBy,
                 'must_change_password' => $createdBy !== null,
                 'temporary_password_version' => $createdBy ? $this->passwordVersion($record) : null,
             ]);
+        } catch (AccountException $exception) {
+            throw $exception;
         } catch (EmailExists) {
             throw new AccountException('This email address is already registered. Sign in or reset your password.', 'email');
         } catch (Throwable $exception) {

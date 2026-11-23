@@ -83,7 +83,7 @@ Sign in and complete email verification. The command assigns administrator acces
 
 ## Accounts and verification
 
-Student enrollment is controlled by teacher CSV imports into their assigned blocks. Administrators monitor pending student activations and can remove pending invitations for correction. The public login page offers **New User** instead of open registration. Teacher accounts are created separately with temporary passwords.
+Student enrollment supports teacher CSV imports into assigned blocks and individual student accounts created by an administrator. Administrators can create student or teacher accounts with temporary passwords; these users sign in normally, replace the temporary password, and verify their email. Manually created students apply to a block for teacher approval. Emails with a pending import invitation must complete New User activation, or have that invitation removed before manual account creation. Administrators monitor pending student activations and can remove pending invitations for correction. The public login page offers **New User** instead of open registration.
 
 ### Import students
 
