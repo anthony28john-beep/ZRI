@@ -1,4 +1,4 @@
-.enrollment-page { display: grid; gap: 24px; }
+.enrollment-page { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
 .enrollment-upload h2 { margin-bottom: 12px; }
 .enrollment-upload .tp-caption { margin-bottom: 14px; line-height: 1.7; }
 .enrollment-upload-form { display: flex; align-items: end; gap: 20px; flex-wrap: wrap; margin-top: 20px; }

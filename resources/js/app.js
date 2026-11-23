@@ -22,6 +22,30 @@ document.querySelectorAll('.field-error[id]').forEach(error => {
 document.querySelector('[data-error-summary]')?.focus();
 
 const navigationDropdowns = document.querySelectorAll('[data-navigation-dropdown]');
+const positionMobilePanels = () => {
+    const navbar = document.querySelector('.workspace-navbar');
+    if (!navbar) return;
+    const top = Math.max(12, navbar.getBoundingClientRect().bottom + 8);
+    navbar.style.setProperty('--workspace-panel-top', `${Math.round(top)}px`);
+};
+positionMobilePanels();
+window.addEventListener('resize', positionMobilePanels);
+const updateTableScrolling = () => {
+    document.querySelectorAll('.tp-table-wrap, .scoreboard-table-scroll').forEach(region => {
+        const overflow = region.scrollWidth > region.clientWidth + 1;
+        region.dataset.scrollable = String(overflow);
+        if (!overflow || region.hasAttribute('tabindex')) return;
+        region.tabIndex = 0;
+        region.setAttribute('role', 'region');
+        if (!region.hasAttribute('aria-label')) {
+            const heading = region.closest('section')?.querySelector('h2, h3');
+            region.setAttribute('aria-label', `${heading?.textContent.trim() || 'Data table'} — scroll horizontally for more columns`);
+        }
+    });
+};
+updateTableScrolling();
+window.addEventListener('load', updateTableScrolling);
+window.addEventListener('resize', updateTableScrolling);
 document.addEventListener('click', event => {
     navigationDropdowns.forEach(dropdown => {
         if (dropdown.open && !dropdown.contains(event.target)) dropdown.open = false;
@@ -37,6 +61,11 @@ document.addEventListener('keydown', event => {
     });
 });
 navigationDropdowns.forEach(dropdown => {
+    dropdown.addEventListener('toggle', () => {
+        if (!dropdown.open) return;
+        positionMobilePanels();
+        navigationDropdowns.forEach(other => { if (other !== dropdown) other.open = false; });
+    });
     dropdown.addEventListener('focusout', event => {
         if (!dropdown.contains(event.relatedTarget)) dropdown.open = false;
     });
