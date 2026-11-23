@@ -1,0 +1,40 @@
+/* Transform/opacity effects only; no layout changes or hidden content without JS. */
+@media (prefers-reduced-motion: no-preference) {
+    body.page-motion-ready [data-page-reveal] { --page-x: 0px; --page-y: 18px; transition: opacity 550ms ease var(--page-delay, 0ms), transform 550ms cubic-bezier(.2,.7,.25,1) var(--page-delay, 0ms); }
+    body.page-motion-ready [data-page-direction="left"] { --page-x: -20px; --page-y: 0px; }
+    body.page-motion-ready [data-page-direction="right"] { --page-x: 20px; --page-y: 0px; }
+    body.page-motion-ready .page-reveal-pending { opacity: 0; transform: translate3d(var(--page-x),var(--page-y),0); }
+    body.page-motion-ready [data-page-card]:not(.page-reveal-pending) { transition: transform 350ms ease var(--page-delay, 0ms), opacity 550ms ease var(--page-delay, 0ms); }
+    body.page-motion-ready [data-page-card]:focus-within { transform: translateY(-4px); transition-delay: 0ms; }
+    body.page-motion-ready :is(.form-panel .button, .admin-submit, .account-button, .tp-toolbar .button, .recovery-card .button) { transition: transform 220ms ease; }
+    body.page-motion-ready :is(.form-panel .button, .admin-submit, .account-button, .tp-toolbar .button, .recovery-card .button):not(:disabled):focus-visible { transform: scale(1.015); }
+    body.page-motion-ready .page-rows-visible > tr { animation: portal-row-enter 400ms ease var(--row-delay, 0ms) both; }
+    body.page-motion-ready [data-page-ambient] { animation: portal-ambient 6s ease-in-out infinite; animation-play-state: paused; }
+    body.page-motion-ready[data-motion-visible="true"] [data-page-ambient][data-in-view="true"] { animation-play-state: running; }
+    body.page-motion-ready :is(.th-primary, .admin-home-primary, .download-button, .about-play-button) { position: relative; isolation: isolate; overflow: hidden; }
+    body.page-motion-ready :is(.th-primary, .admin-home-primary, .download-button, .about-play-button)::after { content: ''; position: absolute; z-index: -1; pointer-events: none; inset: -50% -30%; background: linear-gradient(100deg, transparent 38%, rgba(255,255,255,.35) 50%, transparent 62%); opacity: 0; transform: translateX(-70%) skewX(-15deg); }
+    body.page-motion-ready :is(.th-primary, .admin-home-primary, .download-button, .about-play-button):is(:hover, :focus-visible)::after { animation: portal-cta-sweep 700ms ease both; }
+    body.page-motion-ready .about-chapter img { transition: transform 600ms cubic-bezier(.2,.7,.25,1); }
+    body.page-motion-ready [data-motion-arrow] { display: inline-block; transition: transform 250ms ease; }
+    body.page-motion-ready :is(a:hover, a:focus-visible) > [data-motion-arrow] { transform: translateX(4px); }
+    body.page-motion-ready :is(.admin-action-icon, .th-tool-number, .account-header-icon, .about-step) { transition: transform 300ms ease; }
+    body [data-navigation-dropdown][open] > :is(.navigation-panel, .workspace-account-panel, .workspace-notification-panel) { transform-origin: top right; animation: portal-dropdown-enter 160ms ease-out both; }
+    @media (hover: hover) and (pointer: fine) {
+        body.page-motion-ready [data-page-card]:not(.page-reveal-pending):hover { transform: translateY(-4px); transition-delay: 0ms; }
+        body.page-motion-ready :is(.form-panel .button, .admin-submit, .account-button, .tp-toolbar .button, .recovery-card .button):not(:disabled):hover { transform: scale(1.015); }
+        body.page-motion-ready :is(.admin-action-card, .th-tool):hover :is(.admin-action-icon, .th-tool-number) { transform: translateY(-3px) rotate(-4deg); }
+        body.page-motion-ready .about-chapter:hover img { transform: scale(1.035); }
+        body.page-motion-ready .account-header:hover .account-header-icon { transform: rotate(-5deg); }
+    }
+}
+@keyframes portal-row-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes portal-ambient { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.02); } }
+@keyframes portal-cta-sweep { 0% { opacity: 0; transform: translateX(-70%) skewX(-15deg); } 25% { opacity: .8; } 100% { opacity: 0; transform: translateX(70%) skewX(-15deg); } }
+@keyframes portal-dropdown-enter { from { opacity: 0; transform: translateY(-6px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+    body.page-motion-ready .page-reveal-pending { opacity: 1; transform: none; }
+    body.page-motion-ready [data-page-reveal], body.page-motion-ready [data-page-card] { transition: none; }
+    body.page-motion-ready [data-page-ambient], body.page-motion-ready .page-rows-visible > tr,
+    body.page-motion-ready :is(.th-primary, .admin-home-primary, .download-button, .about-play-button)::after,
+    body [data-navigation-dropdown][open] > :is(.navigation-panel, .workspace-account-panel, .workspace-notification-panel) { animation: none; }
+}

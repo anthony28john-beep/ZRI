@@ -1,4 +1,5 @@
 @import './student-home.css';
+@import './home-motion.css';
 @import './student-about.css';
 @import './student-scoreboard.css';
 @import './teacher-portal.css';
@@ -11,6 +12,7 @@
 @import './student-download.css';
 @import './workspace-navigation.css';
 @import './dark-mode.css';
+@import './page-motion.css';
 
 :root {
     --theme-color-scheme: light;

@@ -1,0 +1,67 @@
+/* Homepage motion is scoped; content stays visible without JavaScript. */
+:root[data-theme="dark"] .game-home {
+    --color-background: #181a1f;
+    --color-accent: #f5b727;
+    --color-accent-light: #f5b727;
+    --color-link: #f5b727;
+    --color-text: #ffffff;
+}
+.game-home .game-feature { --feature-color: var(--color-accent); }
+.game-home .game-feature-icon { height: auto; aspect-ratio: 1; }
+.game-home .game-ambient-menu { position: absolute; top: 13%; right: 8%; display: grid; gap: 14px; pointer-events: none; opacity: .09; color: #fff; font-size: clamp(16px, 2.6vw, 38px); font-weight: 900; font-style: italic; letter-spacing: .12em; transform: translate3d(var(--menu-x, 0px), var(--menu-y, 0px), 0) rotate(-5deg); }
+.game-home .game-journey-item { min-width: 0; display: grid; }
+.game-home .game-button { position: relative; isolation: isolate; overflow: hidden; }
+.game-home .game-button > * { position: relative; z-index: 1; }
+.game-home .game-button-primary::after { content: ''; pointer-events: none; position: absolute; z-index: -1; inset: -50% -30%; background: linear-gradient(100deg, transparent 38%, rgba(255,255,255,.45) 50%, transparent 62%); opacity: 0; }
+.game-home .game-button-outline::before { content: ''; position: absolute; z-index: -1; inset: 0; background: var(--color-accent); opacity: .14; transform: scaleX(0); transform-origin: left; }
+.game-home .game-journey-card:focus-visible { outline: 3px solid var(--color-accent); outline-offset: -10px; }
+
+@media (prefers-reduced-motion: no-preference) {
+    .game-home.home-motion-ready .game-hero-copy > * { animation: home-enter 650ms cubic-bezier(.2,.7,.25,1) both; }
+    .game-home.home-motion-ready .game-hero-copy > :nth-child(2) { animation-delay: 100ms; }
+    .game-home.home-motion-ready .game-hero-copy > :nth-child(3) { animation-delay: 200ms; }
+    .game-home.home-motion-ready .game-hero-copy > :nth-child(4) { animation-delay: 300ms; }
+    .game-home.home-motion-ready .game-hero-copy > :nth-child(5) { animation-delay: 400ms; }
+    .game-home.home-motion-ready .game-hero-visual > img { animation: home-breathe 22s ease-in-out infinite alternate; }
+    .game-home.home-motion-ready .game-motto { animation: home-float 5s ease-in-out infinite; }
+    .game-home.home-motion-ready .game-button-primary::after { animation: home-shimmer 6s ease-in-out infinite; }
+    .game-home.home-motion-ready :is(.game-hero-visual > img, .game-motto), .game-home.home-motion-ready .game-button-primary::after { animation-play-state: paused; }
+    .game-home.home-motion-ready[data-hero-active="true"] :is(.game-hero-visual > img, .game-motto), .game-home.home-motion-ready[data-hero-active="true"] .game-button-primary::after { animation-play-state: running; }
+    .game-home [data-home-reveal] { --reveal-x: 0px; --reveal-y: 20px; transition: opacity 650ms ease var(--reveal-delay, 0ms), transform 650ms cubic-bezier(.2,.7,.25,1) var(--reveal-delay, 0ms); }
+    .game-home [data-home-reveal="left"] { --reveal-x: -24px; --reveal-y: 0px; }
+    .game-home [data-home-reveal="right"] { --reveal-x: 24px; --reveal-y: 0px; }
+    .game-home .home-reveal-pending { opacity: 0; transform: translate3d(var(--reveal-x), var(--reveal-y), 0); }
+    .game-home .game-button, .game-home .game-button-arrow, .game-home .game-button-outline::before,
+    .game-home .game-journey-card, .game-home .game-journey-card > img,
+    .game-home .game-journey-card::after { transition: transform 300ms cubic-bezier(.2,.7,.25,1), opacity 300ms ease; }
+    .game-home .game-button:is(:hover, :focus-visible) { transform: scale(1.03); }
+    .game-home .game-button:is(:hover, :focus-visible) .game-button-arrow { transform: translateX(4px); }
+    .game-home .game-button-outline:is(:hover, :focus-visible)::before { transform: scaleX(1); }
+    .game-home .game-journey-card::after { background: var(--color-accent); opacity: .55; }
+    .game-home .game-journey-card:focus-visible { transform: translateY(-8px); }
+    .game-home .game-journey-card:focus-visible > img { transform: scale(1.08); }
+    .game-home .game-journey-card:focus-visible::after { opacity: 1; }
+    .game-home .game-journey-item:focus-within { filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); }
+    @media (hover: hover) and (pointer: fine) {
+        .game-home .game-feature:hover .game-feature-icon { animation: home-icon-bounce 500ms ease; }
+        .game-home .game-feature:hover :is(h2, p) { color: var(--color-text); }
+        .game-home .game-journey-item:hover { filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); }
+        .game-home .game-journey-item:hover .game-journey-card { transform: translateY(-8px); }
+        .game-home .game-journey-item:hover .game-journey-card > img { transform: scale(1.08); }
+        .game-home .game-journey-item:hover .game-journey-card::after { opacity: 1; }
+    }
+}
+@keyframes home-enter { from { opacity: 0; transform: translate3d(0,20px,0); } to { opacity: 1; transform: translate3d(0,0,0); } }
+@keyframes home-breathe { from { transform: scale(1); } to { transform: scale(1.05); } }
+@keyframes home-float { 0%,100% { transform: translateY(0) rotate(-9deg); } 50% { transform: translateY(-4px) rotate(-7deg); } }
+@keyframes home-shimmer { 0%,55% { opacity: 0; transform: translate3d(-70%,0,0) skewX(-15deg); } 62% { opacity: .8; } 78%,100% { opacity: 0; transform: translate3d(70%,0,0) skewX(-15deg); } }
+@keyframes home-icon-bounce { 0%,100% { transform: translateY(0) rotate(0); } 45% { transform: translateY(-5px) rotate(-7deg); } 70% { transform: translateY(-2px) rotate(3deg); } }
+@media (max-width: 760px) { .game-home .game-ambient-menu { right: 5%; top: 28%; opacity: .05; } }
+@media (prefers-reduced-motion: reduce) {
+    .game-home.home-motion-ready .game-hero-copy > *, .game-home.home-motion-ready .game-hero-visual > img,
+    .game-home.home-motion-ready .game-motto, .game-home .game-feature-icon, .game-home .game-button-primary::after { animation: none; }
+    .game-home [data-home-reveal], .game-home .game-button, .game-home .game-button-arrow, .game-home .game-journey-card,
+    .game-home .game-journey-card > img, .game-home .game-button-outline::before { transition: none; }
+    .game-home .home-reveal-pending { opacity: 1; transform: none; }
+    .game-home .game-ambient-menu { transform: rotate(-5deg); }
+}

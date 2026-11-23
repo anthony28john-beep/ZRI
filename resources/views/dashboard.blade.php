@@ -5,7 +5,7 @@
 @section('content')
 
 
-<div class="student-dashboard game-home">
+<div class="student-dashboard game-home" data-home-motion>
     @include('student.partials.navbar')
 
     <main>
@@ -20,6 +20,7 @@
                 @if ($heroImage && is_file(public_path($heroImage)))
                     <img src="{{ asset($heroImage).'?v='.filemtime(public_path($heroImage)) }}" alt="" fetchpriority="high">
                 @endif
+                <div class="game-ambient-menu"><span>START</span><span>SETTINGS</span><span>LEVELS</span><span>CREDITS</span><span>EXIT</span></div>
             </div>
             <div class="game-container game-hero-inner">
                 <div class="game-hero-copy">
@@ -54,7 +55,7 @@
 
         <section class="game-features" aria-label="Game highlights">
             <div class="game-container game-features-grid">
-                <div class="game-feature game-feature-orange">
+                <div class="game-feature game-feature-orange" data-home-reveal="up" style="--reveal-delay: 0ms">
                     <div class="game-feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M10 9h12c3 0 4 3 5 6l2 7c1 4-3 6-5 3l-4-4h-8l-4 4c-2 3-6 1-5-3l2-7c1-3 2-6 5-6Z"/><path d="M10 12v7m-3.5-3.5h7M21 13h.01M24 17h.01"/>
@@ -62,7 +63,7 @@
                     </div>
                     <div><h2>Engaging Gameplay</h2><p>Fun and challenging missions</p></div>
                 </div>
-                <div class="game-feature game-feature-blue">
+                <div class="game-feature game-feature-blue" data-home-reveal="up" style="--reveal-delay: 90ms">
                     <div class="game-feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m16 3 11 4v9c0 6-6 10-11 13C11 26 5 22 5 16V7l11-4Z"/><path d="m10 16 4 4 8-9"/>
@@ -70,7 +71,7 @@
                     </div>
                     <div><h2>Real-Life Skills</h2><p>Build better decision making</p></div>
                 </div>
-                <div class="game-feature game-feature-purple">
+                <div class="game-feature game-feature-purple" data-home-reveal="up" style="--reveal-delay: 180ms">
                     <div class="game-feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="10" r="5"/><path d="M2 28v-3a10 10 0 0 1 20 0v3H2ZM23 5a5 5 0 0 1 0 10m3 5a8 8 0 0 1 4 7"/>
@@ -78,7 +79,7 @@
                     </div>
                     <div><h2>Track Your Progress</h2><p>See how you grow</p></div>
                 </div>
-                <div class="game-feature game-feature-green">
+                <div class="game-feature game-feature-green" data-home-reveal="up" style="--reveal-delay: 270ms">
                     <div class="game-feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 4h14v9a7 7 0 0 1-14 0V4ZM16 20v8m-6 1h12M9 7H3v4a6 6 0 0 0 7 6M23 7h6v4a6 6 0 0 1-7 6"/>
@@ -91,7 +92,7 @@
 
         <section class="game-about" aria-labelledby="game-about-heading">
             <div class="game-container game-about-grid">
-                <div class="game-about-copy">
+                <div class="game-about-copy" data-home-reveal="left">
                     <p class="game-eyebrow">ABOUT THE GAME</p>
                     <h2 id="game-about-heading">More Than Just a <span>Game</span></h2>
                     <p>ZeroRiskInitiative is an educational game designed to teach important life skills through interactive challenges, and missions.</p>
@@ -101,12 +102,14 @@
                 </div>
                 <div class="game-journey" aria-label="Explore, solve, and improve">
                     @foreach ([['key' => 'explore', 'title' => 'Explore', 'caption' => 'Discover the game'], ['key' => 'solve', 'title' => 'Solve', 'caption' => 'Complete tasks'], ['key' => 'improve', 'title' => 'Improve', 'caption' => 'Build real-life skills']] as $card)
-                        <article class="game-journey-card game-journey-{{ $card['key'] }}">
+                        <div class="game-journey-item" data-home-reveal="right" style="--reveal-delay: {{ $loop->index * 110 }}ms">
+                        <article class="game-journey-card game-journey-{{ $card['key'] }}" tabindex="0" aria-labelledby="journey-title-{{ $card['key'] }}">
                             @if (config('student_dashboard.images.'.$card['key']))
                                 <img src="{{ asset(config('student_dashboard.images.'.$card['key'])) }}" alt="" loading="lazy">
                             @endif
-                            <div class="game-journey-caption"><h3>{{ $card['title'] }}</h3><p>{{ $card['caption'] }}</p></div>
+                            <div class="game-journey-caption"><h3 id="journey-title-{{ $card['key'] }}">{{ $card['title'] }}</h3><p>{{ $card['caption'] }}</p></div>
                         </article>
+                        </div>
                     @endforeach
                 </div>
             </div>
