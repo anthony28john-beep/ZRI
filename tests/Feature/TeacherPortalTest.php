@@ -80,20 +80,23 @@ class TeacherPortalTest extends TestCase
             ['count' => 3, 'items' => [['id' => 'request-ada', 'name' => 'Ada Learner', 'block' => 'BSCE 2 A']]],
             ['count' => 0, 'items' => []]
         );
-        $this->signIn()->get('/teacher')->assertOk()->assertSee('3 pending block applications. Review applications.')
-            ->assertSee('data-application-notifications', false)->assertSee('workspace-notification-panel')
-            ->assertSee('Ada Learner')->assertSee('wants to join')->assertSee('BSCE 2 A')
-            ->assertSee(route('teacher.applications').'#application-request-ada')->assertSee('View all block applications');
-        $this->get('/teacher')->assertOk()->assertSee('No pending block applications. View applications.')
-            ->assertSee("You're all caught up", false)->assertDontSee('Ada Learner')->assertDontSee('3 pending block applications');
+        $this->signIn()->get('/teacher')->assertOk()->assertSee('data-application-notifications', false)
+            ->assertSee('data-notification-url', false)->assertDontSee('Ada Learner');
+        $response = $this->getJson('/notifications?uid=another-teacher')->assertOk()->assertJsonPath('count', 3)->assertJsonPath('role', 'teacher');
+        $this->assertStringContainsString('Ada Learner', $response->json('html'));
+        $this->assertStringContainsString(route('teacher.applications').'#application-request-ada', $response->json('html'));
+        $response = $this->getJson('/notifications')->assertOk()->assertJsonPath('count', 0);
+        $this->assertStringContainsString("You're all caught up", $response->json('html'));
     }
 
     public function test_notification_outage_does_not_break_the_teacher_home_or_claim_zero_requests(): void
     {
         $this->classes->shouldReceive('forTeacher')->andReturn([]);
         $this->memberships->shouldReceive('pendingNotificationsForTeacher')->andThrow(new ClassroomUnavailable('Unavailable'));
-        $this->signIn()->get('/teacher')->assertOk()->assertSee('Block application notifications unavailable.')
-            ->assertDontSee('No pending block applications. View applications.');
+        $this->signIn()->get('/teacher')->assertOk()->assertSee('data-notification-url', false);
+        $response = $this->getJson('/notifications')->assertOk()->assertJsonPath('count', null);
+        $this->assertStringContainsString('Block application notifications unavailable.', $response->json('html'));
+        $this->assertStringNotContainsString('No pending block applications. View applications.', $response->json('html'));
     }
 
     public function test_home_overview_and_follow_ups_use_the_selected_level(): void

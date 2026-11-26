@@ -109,6 +109,10 @@ Student notification dropdowns show new teacher-approved block acceptances and s
 
 Full names are used in greetings, account details, rosters, applications, and leaderboards. Supported fields are `fullname`, `fullName`, and `full_name`. The website also supports its full-name form value stored as `name`; a value matching the profile's username is ignored. Usernames and Authentication display names are not used as fallback labels. Missing names use neutral labels such as Student or Player.
 
+## Performance
+
+For faster page rendering, teacher and student notification dropdowns load separately through the authenticated `/notifications` endpoint after page load (or when the bell is opened). Without JavaScript, the dropdown links to the relevant applications or scoreboard page. Global leaderboards share a 30-second cache per Firebase project/database; names and scores may reflect that short delay. Firestore OAuth access tokens are encrypted in Laravel's server-side cache, isolated by service-account credentials/project, and refreshed before expiry. Credential rotation automatically changes the cache key. Keep `APP_KEY` stable and use the shared Redis cache on Vercel. Login, role, verification, and block-ownership checks remain live.
+
 ## Blocks and classes
 
 Administrators create blocks and assign teachers through Manage Classes. Approved block members appear automatically in the corresponding roster. Administrators can also assign student memberships directly.

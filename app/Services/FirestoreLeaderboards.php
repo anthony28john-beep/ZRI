@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\ScoreboardUnavailable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -17,7 +18,33 @@ class FirestoreLeaderboards
     {
         try {
             $connection = $this->credentials->connection();
-            $resource = 'projects/'.$connection['project_id'].'/databases/'.config('firebase.firestore_database_id', '(default)').'/documents';
+        } catch (Throwable $exception) {
+            Log::warning('Leaderboard authorization failed.', ['exception_type' => $exception::class]);
+            throw new ScoreboardUnavailable('Leaderboards are temporarily unavailable. Please try again shortly.');
+        }
+        $resource = 'projects/'.$connection['project_id'].'/databases/'.config('firebase.firestore_database_id', '(default)').'/documents';
+        $key = 'global-leaderboards:v1:'.hash('sha256', $resource);
+        try {
+            $cached = Cache::get($key);
+            if (is_array($cached)) {
+                return $cached;
+            }
+        } catch (Throwable) {
+            // Fall back to the live query if caching is unavailable.
+        }
+        $boards = $this->load($connection, $resource);
+        try {
+            Cache::put($key, $boards, 30);
+        } catch (Throwable) {
+            // A successful query remains usable even if the cache write fails.
+        }
+
+        return $boards;
+    }
+
+    private function load(array $connection, string $resource): array
+    {
+        try {
             $url = 'https://firestore.googleapis.com/v1/'.implode('/', array_map('rawurlencode', explode('/', $resource)));
             $client = Http::withToken($connection['access_token'])->acceptJson()->connectTimeout(5)->timeout(15);
             $scores = ['tutorial' => [], 'level1' => []];

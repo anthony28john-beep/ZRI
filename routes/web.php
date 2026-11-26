@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminClassroomController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlockMembershipController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PendingStudentActivationController;
 use App\Http\Controllers\StudentAccountController;
 use App\Http\Controllers\StudentActivationController;
@@ -37,6 +38,7 @@ Route::middleware('no.cache')->group(function () {
         Route::post('/verify-email', [AccountRecoveryController::class, 'sendVerification'])->middleware('throttle:verification')->name('verification.send');
 
         Route::middleware('account.ready')->group(function () {
+            Route::get('/notifications', NotificationController::class)->middleware(['role:student,teacher', 'throttle:notifications'])->name('notifications');
             Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
             Route::post('/admin/users', [AdminUserController::class, 'store'])->middleware(['role:admin', 'throttle:account'])->name('admin.users.store');
             Route::middleware('role:admin')->group(function () {

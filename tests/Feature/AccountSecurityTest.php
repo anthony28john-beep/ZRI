@@ -266,6 +266,14 @@ class AccountSecurityTest extends TestCase
         ])->assertSessionHasErrors('role')->assertSessionMissing('_old_input.password');
     }
 
+    public function test_notification_feed_requires_a_ready_student_or_teacher_session(): void
+    {
+        $this->getJson('/notifications')->assertRedirect('/login');
+        $this->signedIn('admin')->getJson('/notifications')->assertForbidden();
+        $this->identity['email_verified'] = false;
+        $this->signedIn('student')->get('/notifications')->assertRedirect('/verify-email');
+    }
+
     public function test_login_is_rate_limited(): void
     {
         $this->accounts->shouldReceive('signIn')->times(5)->andThrow(new AccountException('Invalid credentials.', 'email'));

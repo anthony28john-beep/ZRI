@@ -50,8 +50,10 @@ class BlockMembershipTest extends TestCase
         ]);
         $this->app->instance(StudentNotifications::class, $notifications);
         $this->signIn()->get('/student/about-game')->assertOk()->assertSee('data-student-notifications', false)
-            ->assertSee('Block application accepted')->assertSee('You have been accepted into BSIT 1A.')
-            ->assertSee('Level 2 completed!')->assertSee('You scored 35 points on this run.')->assertSee('View scoreboard');
+            ->assertDontSee('You scored 35 points');
+        $response = $this->getJson('/notifications?uid=another-student')->assertOk()->assertJsonPath('count', 2);
+        $this->assertStringContainsString('You have been accepted into BSIT 1A.', $response->json('html'));
+        $this->assertStringContainsString('You scored 35 points on this run.', $response->json('html'));
     }
 
     public function test_current_members_see_their_block_and_leave_controls(): void

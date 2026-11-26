@@ -6,6 +6,7 @@ use App\Exceptions\ScoreboardUnavailable;
 use App\Services\FirestoreCredentials;
 use App\Services\FirestoreLeaderboards;
 use App\Services\FullNames;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Kreait\Firebase\Contract\Database;
 use Kreait\Firebase\Database\Reference;
@@ -25,10 +26,11 @@ class FirestoreLeaderboardsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Cache::flush();
         Http::preventStrayRequests();
         config(['firebase.firestore_database_id' => '(default)']);
         $credentials = Mockery::mock(FirestoreCredentials::class);
-        $credentials->shouldReceive('connection')->once()->andReturn(['project_id' => 'test-project', 'access_token' => 'test-token']);
+        $credentials->shouldReceive('connection')->andReturn(['project_id' => 'test-project', 'access_token' => 'test-token']);
         $this->database = Mockery::mock(Database::class);
         $this->boards = new FirestoreLeaderboards($credentials, $this->database);
     }
@@ -36,6 +38,30 @@ class FirestoreLeaderboardsTest extends TestCase
     private function scoreDocument(string $uid, string $level, mixed $score): array
     {
         return ['document' => ['name' => $this->resource.'/players/'.$uid.'/levels/'.$level, 'fields' => ['highestScore' => ['integerValue' => $score]]]];
+    }
+
+    public function test_global_results_are_reused_for_thirty_seconds_then_refreshed(): void
+    {
+        $this->freezeTime();
+        Http::fake([$this->url.':runQuery' => Http::response([])]);
+        $first = $this->boards->levels();
+        $this->assertSame($first, $this->boards->levels());
+        Http::assertSentCount(1);
+        $this->travel(31)->seconds();
+        $this->assertSame($first, $this->boards->levels());
+        Http::assertSentCount(2);
+    }
+
+    public function test_failed_leaderboard_queries_are_not_cached(): void
+    {
+        Http::fake([$this->url.':runQuery' => Http::sequence()->push([], 503)->push([])]);
+        try {
+            $this->boards->levels();
+            $this->fail('Expected a scoreboard outage.');
+        } catch (ScoreboardUnavailable) {
+            $this->assertSame([['name' => 'Tutorial', 'players' => []], ['name' => 'Level 1', 'players' => []]], $this->boards->levels());
+        }
+        Http::assertSentCount(2);
     }
 
     private function player(string $uid, string $name): array

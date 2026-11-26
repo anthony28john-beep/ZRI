@@ -4,6 +4,9 @@ namespace Tests\Unit;
 
 use App\Services\FirebaseServiceAccount;
 use App\Services\FirestoreCredentials;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 use Tests\TestCase;
@@ -60,6 +63,23 @@ class FirebaseServiceAccountTest extends TestCase
         $credentials = new FirestoreCredentials(new FirebaseServiceAccount);
         $this->assertSame(['project_id' => 'test-project', 'access_token' => 'test-access-token'], $credentials->connection());
         $credentials->connection();
+        $source = (new FirebaseServiceAccount)->source();
+        $googleCredentials = new ServiceAccountCredentials('https://www.googleapis.com/auth/datastore', $source);
+        $cacheKey = 'firestore-oauth:v1:'.hash('sha256', 'test-project|'.$googleCredentials->getCacheKey().'|'.hash('sha256', json_encode($source, JSON_THROW_ON_ERROR)));
+        $cached = Cache::get($cacheKey);
+        $this->assertNotSame('test-access-token', $cached['token']);
+        $this->assertSame('test-access-token', Crypt::decryptString($cached['token']));
+        $this->assertSame($credentials->connection(), (new FirestoreCredentials(new FirebaseServiceAccount))->connection());
         Http::assertSentCount(1);
+        $this->travel(3541)->seconds();
+        (new FirestoreCredentials(new FirebaseServiceAccount))->connection();
+        Http::assertSentCount(2);
+        config(['firebase.project_id' => 'another-project']);
+        (new FirestoreCredentials(new FirebaseServiceAccount))->connection();
+        Http::assertSentCount(3);
+        $source['client_email'] = 'another-service@test-project.iam.gserviceaccount.com';
+        config(['firebase.credentials_json' => json_encode($source)]);
+        (new FirestoreCredentials(new FirebaseServiceAccount))->connection();
+        Http::assertSentCount(4);
     }
 }

@@ -7,9 +7,8 @@
     } else {
         foreach ([['home', 'Home', 'home'], ['students', 'Students', 'users'], ['students.import', 'Import Students', 'upload'], ['progress', 'Progress', 'chart'], ['leaderboard', 'Leaderboard', 'trophy'], ['applications', 'Block Applications', 'inbox']] as [$section, $label, $icon]) {
             $links[] = ['url' => route('teacher.'.$section, request()->only('class')), 'label' => $label, 'icon' => $icon,
-                'active' => $section === 'students' ? request()->routeIs('teacher.students', 'teacher.students.show', 'teacher.students.remove') : request()->routeIs('teacher.'.$section, 'teacher.'.$section.'.*'),
-                'count' => $section === 'applications' ? ($pendingApplicationCount ?? 0) : 0];
+                'active' => $section === 'students' ? request()->routeIs('teacher.students', 'teacher.students.show', 'teacher.students.remove') : request()->routeIs('teacher.'.$section, 'teacher.'.$section.'.*')];
         }
     }
 @endphp
-<x-workspace-navigation :role="$portalRole" :links="$links" :pending-application-count="$pendingApplicationCount ?? null" :application-notifications="$applicationNotifications ?? []" :student-notifications="$studentNotifications ?? []" />
+<x-workspace-navigation :role="$portalRole" :links="$links" />

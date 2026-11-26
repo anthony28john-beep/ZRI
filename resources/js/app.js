@@ -1,6 +1,7 @@
 import './theme';
 import './home-motion';
 import './page-motion';
+import './notifications';
 
 window.addEventListener('pageshow', event => {
     if (event.persisted) { window.location.reload(); return; }
