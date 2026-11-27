@@ -8,7 +8,7 @@
 <div class="admin-page">
     @include('admin.partials.navbar')
 
-    <main class="admin-container admin-main">
+    <main id="main-content" tabindex="-1" class="admin-container admin-main">
         <div class="admin-page-heading">
             <div class="admin-eyebrow">PEOPLE &amp; ACCESS</div>
             <h1>Create an account</h1>

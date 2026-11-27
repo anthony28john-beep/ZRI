@@ -3,7 +3,7 @@
 @section('title', 'Login | ZeroRiskInitiative')
 
 @section('content')
-<div class="page auth-background">
+<main id="main-content" tabindex="-1" class="page auth-background">
     <div class="auth-container">
         <section class="brand-panel">
             <div class="brand-badge">ZERO RISK SYSTEM</div>
@@ -82,5 +82,5 @@
             </p>
         </section>
     </div>
-</div>
+</main>
 @endsection

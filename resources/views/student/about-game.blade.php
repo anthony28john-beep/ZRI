@@ -6,7 +6,7 @@
 <div class="student-dashboard game-about-page">
     @include('student.partials.navbar')
 
-    <main class="student-content">
+    <main id="main-content" tabindex="-1" class="student-content">
         <header class="about-intro">
             <div class="about-intro-copy">
             <div class="brand-badge">ZERO RISK INITIATIVE</div>

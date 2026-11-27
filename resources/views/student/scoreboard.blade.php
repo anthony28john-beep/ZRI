@@ -6,7 +6,7 @@
 <div class="student-dashboard scoreboard-page">
     @include('student.partials.navbar')
 
-    <main class="student-content" aria-label="Scoreboard">
+    <main id="main-content" tabindex="-1" class="student-content" aria-label="Scoreboard">
         <header class="scoreboard-heading">
             <div>
                 <div class="brand-badge">SCOREBOARD</div>

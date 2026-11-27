@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Verify Email | ZeroRiskInitiative')
 @section('content')
-<main class="page verify-page">
+<main id="main-content" tabindex="-1" class="page verify-page">
     <div class="verify-card">
         <aside class="verify-story" aria-label="Account verification">
             <div class="verify-brand">ZeroRisk<span>Initiative</span></div>

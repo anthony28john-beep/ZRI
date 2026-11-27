@@ -3,7 +3,7 @@
 @section('content')
 <div class="admin-page">
     @include('admin.partials.navbar')
-    <main class="tp-shell enrollment-page">
+    <main id="main-content" tabindex="-1" class="tp-shell enrollment-page">
         <header class="tp-heading"><div><span class="tp-eyebrow">STUDENT ENROLLMENT</span><h1>Pending student activations</h1><p>Teachers import their assigned students. Monitor students who have not completed activation through New User.</p></div></header>
         @include('partials.messages')
         <div class="activation-summary" aria-label="Activation overview">

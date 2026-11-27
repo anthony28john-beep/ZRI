@@ -3,7 +3,7 @@
 @section('content')
 <div class="admin-page">
     @include('admin.partials.navbar')
-    <main class="tp-shell">
+    <main id="main-content" tabindex="-1" class="tp-shell">
         <a class="tp-link" href="{{ route('admin.classes') }}">&larr; Back to Manage Classes</a>
         <header class="tp-heading"><div><span class="tp-eyebrow">BLOCK MANAGEMENT</span><h1>Delete {{ $block['name'] }}?</h1><p>Deleted blocks will no longer be available for student enrollment.</p></div></header>
         @include('partials.messages')

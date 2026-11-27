@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'New User | ZeroRiskInitiative')
 @section('content')
-<div class="page auth-background"><div class="auth-container">
+<main id="main-content" tabindex="-1" class="page auth-background"><div class="auth-container">
     <section class="brand-panel">
         <div class="brand-badge">YOUR LEARNING STARTS HERE</div>
         <h1>ZeroRisk<span>Initiative</span></h1>
@@ -20,5 +20,5 @@
         <p class="form-link">Already registered in the game or website? <a href="{{ route('login') }}">Sign in</a> or <a href="{{ route('password.request') }}">reset your password</a>.</p>
         <p class="form-link">Not on the student list? Ask your teacher to import your details.</p>
     </section>
-</div></div>
+</div></main>
 @endsection

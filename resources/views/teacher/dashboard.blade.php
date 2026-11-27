@@ -2,7 +2,7 @@
 @section('title', ucfirst($page).' | Teacher Portal')
 @section('content')
 @include('teacher.partials.navbar')
-<main class="tp-shell {{ $page === 'home' ? 'teacher-home' : '' }}">
+<main id="main-content" tabindex="-1" class="tp-shell {{ $page === 'home' ? 'teacher-home' : '' }}">
     @if ($page === 'home')
         @include('teacher.partials.home')
     @else

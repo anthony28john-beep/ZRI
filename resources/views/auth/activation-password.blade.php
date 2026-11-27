@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Set Your Password | ZeroRiskInitiative')
 @section('content')
-<div class="page"><div class="auth-container">
+<main id="main-content" tabindex="-1" class="page"><div class="auth-container">
     <section class="brand-panel"><div class="brand-badge">EMAIL VERIFIED</div><h1>ZeroRisk<span>Initiative</span></h1><p>Welcome, {{ $student['fullname'] }}. Choose a password to use on the website and in the game.</p></section>
     <section class="form-panel">
         <h2>Set your password</h2><p class="subtitle">Verified email: {{ $student['email'] }}</p>
@@ -14,5 +14,5 @@
         </form>
         <p class="form-link">Your imported block will be sent to its teacher for approval.</p>
     </section>
-</div></div>
+</div></main>
 @endsection

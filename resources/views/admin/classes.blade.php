@@ -3,7 +3,7 @@
 @section('content')
 <div class="admin-page">
 @include('admin.partials.navbar')
-<main class="tp-shell cm-page">
+<main id="main-content" tabindex="-1" class="tp-shell cm-page">
     <a class="tp-link" href="{{ route('dashboard') }}">&larr; Admin dashboard</a>
     <header class="tp-heading"><div><span class="tp-eyebrow">ADMINISTRATION</span><h1>Manage Classes</h1><p>Add a block, then choose its teacher. Students apply to a block and join after its teacher accepts them.</p></div></header>
     @if (session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif

@@ -3,7 +3,7 @@
 @section('content')
 <div class="admin-page">
     @include('admin.partials.navbar')
-    <main class="tp-shell">
+    <main id="main-content" tabindex="-1" class="tp-shell">
         <header class="tp-heading">
             <div><span class="tp-eyebrow">PEOPLE &amp; ACCESS</span><h1>Manage accounts</h1><p>Find student and teacher accounts and manage their access.</p></div>
             <a class="button" href="{{ route('admin.users.create') }}">Create Account &rarr;</a>

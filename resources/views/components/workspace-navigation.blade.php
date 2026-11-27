@@ -30,6 +30,7 @@
                 <svg class="navigation-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5 5-5"/></svg>
             </summary>
             <div class="workspace-account-panel">
+                <x-panel-close />
                 <div class="workspace-account-heading"><strong>{{ $fullName }}</strong><span>{{ $roleLabel }} account</span></div>
                 @if ($role !== 'admin')
                     <a class="workspace-account-link {{ $accountActive ? 'is-active' : '' }}" href="{{ route($role.'.account') }}" @if ($accountActive) aria-current="page" @endif><x-nav-icon name="user" />Account Information</a>

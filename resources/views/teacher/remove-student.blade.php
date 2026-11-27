@@ -2,7 +2,7 @@
 @section('title', 'Remove Student | Teacher Portal')
 @section('content')
 @include('teacher.partials.navbar')
-<main class="tp-shell">
+<main id="main-content" tabindex="-1" class="tp-shell">
     <a class="tp-link" href="{{ route('teacher.students', ['class' => $classroom['id']]) }}">&larr; Back to class roster</a>
     <header class="tp-heading"><div><span class="tp-eyebrow">CLASS MEMBERSHIP</span><h1>Remove student?</h1><p>Review the membership below before confirming.</p></div></header>
     @include('partials.messages')

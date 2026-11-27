@@ -3,7 +3,7 @@
 @section('content')
 <div class="admin-page">
     @include('admin.partials.navbar')
-    <main class="admin-container admin-main admin-home">
+    <main id="main-content" tabindex="-1" class="admin-container admin-main admin-home">
         @if (session('success'))
             <div class="alert alert-success" role="status">{{ session('success') }}</div>
         @endif

@@ -7,6 +7,7 @@
         <svg class="navigation-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5 5-5"/></svg>
     </summary>
     <div class="navigation-panel">
+        <x-panel-close />
         <p class="navigation-panel-heading">{{ $label }}</p>
         {{ $slot }}
     </div>

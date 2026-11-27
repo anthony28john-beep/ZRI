@@ -6,7 +6,7 @@
 <div class="account-page">
     @include('partials.navbar', ['portalRole' => $accountRole])
 
-    <main class="account-content">
+    <main id="main-content" tabindex="-1" class="account-content">
         @include('partials.messages')
         @if ($user['must_change_password'])
             <div class="alert alert-warning" role="status">Replace your temporary password to continue to your dashboard.</div>

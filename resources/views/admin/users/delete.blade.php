@@ -3,7 +3,7 @@
 @section('content')
 <div class="admin-page">
     @include('admin.partials.navbar')
-    <main class="tp-shell">
+    <main id="main-content" tabindex="-1" class="tp-shell">
         <header class="tp-heading"><div><span class="tp-eyebrow">ACCOUNT MANAGEMENT</span><h1>Delete account?</h1><p>Review this account before permanently removing its access.</p></div></header>
         @include('partials.messages')
         <section class="tp-panel admin-delete-panel" aria-labelledby="delete-account-heading">

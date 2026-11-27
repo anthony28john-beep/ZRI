@@ -12,6 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     @yield('content')
 </body>
 </html>

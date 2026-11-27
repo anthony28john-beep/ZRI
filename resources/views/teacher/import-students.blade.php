@@ -3,7 +3,7 @@
 @section('content')
 <div class="teacher-page">
     @include('teacher.partials.navbar')
-    <main class="tp-shell enrollment-page">
+    <main id="main-content" tabindex="-1" class="tp-shell enrollment-page">
         <header class="tp-heading"><div><span class="tp-eyebrow">STUDENT ENROLLMENT</span><h1>Import students</h1><p>Upload your student list. Learners verify their email and set their own password through New User.</p></div><a class="tp-link" href="{{ route('teacher.students.template') }}">Download CSV template &darr;</a></header>
         @include('partials.messages')
         <ol class="enrollment-workflow" aria-label="Import steps"><li>1. Prepare CSV</li><li>2. Preview and correct</li><li>3. Confirm import</li><li>4. Guide student activation</li></ol>

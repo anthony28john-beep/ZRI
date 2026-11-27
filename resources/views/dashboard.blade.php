@@ -8,7 +8,7 @@
 <div class="student-dashboard game-home" data-home-motion>
     @include('student.partials.navbar')
 
-    <main>
+    <main id="main-content" tabindex="-1">
         @if (session('success') || session('warning') || $errors->any())
             <div class="game-container game-notices">@include('partials.messages')</div>
         @endif

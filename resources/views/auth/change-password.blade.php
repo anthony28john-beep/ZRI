@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Change Password | ZeroRiskInitiative')
 @section('content')
-<main class="page">
+<main id="main-content" tabindex="-1" class="page">
     <section class="dashboard-card recovery-card">
         <div class="brand-badge">ACCOUNT SECURITY</div>
         <h1>Change your password</h1>

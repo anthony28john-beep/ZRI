@@ -1,0 +1,80 @@
+/* Reflow and interaction refinements; the construction palette remains unchanged. */
+.skip-link { position: fixed; top: 8px; left: 12px; z-index: 1000; max-width: calc(100vw - 24px); padding: 14px 18px; border-radius: 8px; color: var(--color-on-accent); background: var(--color-accent); font-size: 1rem; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere; transform: translateY(-160%); }
+.skip-link:focus { transform: none; }
+body :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible { outline: 3px solid var(--color-link); outline-offset: 3px; }
+body main[tabindex="-1"]:focus { outline: none; }
+body :is(.tp-shell, .account-content, .student-content) { overflow-wrap: anywhere; }
+body .workspace-navbar .workspace-brand > span { white-space: normal; overflow-wrap: anywhere; }
+body .workspace-navbar .workspace-links > a { white-space: normal; }
+body .workspace-panel-close { position: absolute; top: 8px; right: 8px; z-index: 2; display: grid; place-items: center; width: 44px; min-height: 44px; padding: 8px; border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text); background: var(--color-surface); cursor: pointer; }
+body .workspace-panel-close:hover { background: var(--color-surface-soft); }
+body .workspace-navbar :is(.navigation-panel-heading, .workspace-account-heading, .workspace-notification-heading) { padding-right: 48px; min-height: 44px; }
+body .workspace-navbar .workspace-notification-heading { flex-wrap: wrap; }
+body .workspace-navbar :is(.workspace-account-panel, .workspace-notification-panel, .navigation-panel) { scroll-padding-block: 12px; }
+body .workspace-navbar :is(.workspace-account-name > strong, .workspace-account-heading > strong) { overflow-wrap: anywhere; }
+body .workspace-navbar :is(.navigation-panel, .workspace-account-panel, .workspace-notification-panel) :is(a, button) { min-height: 44px; }
+body .workspace-navbar .workspace-notification-caption { font-size: .8125rem; }
+body .workspace-navbar .workspace-notification-list a > span:nth-child(2) { font-size: .875rem; }
+body .workspace-navbar .workspace-notification-list small { font-size: .75rem; }
+body :is(.tp-table, .scoreboard-table) { line-height: 1.65; }
+body .tp-table :is(td, th) :is(a, summary), body .tp-table-wrap .text-button { display: inline-flex; align-items: center; min-height: 44px; }
+body :is(.tp-checkbox-grid, .enrollment-confirm) label { min-height: 44px; }
+body .tp-checkbox-grid label { align-items: center; padding-block: 6px; }
+body .tp-checkbox-grid input { margin-block: 0; }
+body :is(.tp-toolbar, .tp-form-grid, .admin-fields, .account-form) select { text-overflow: ellipsis; }
+body :is(.tp-toolbar, .enrollment-upload-form, .enrollment-confirm, .tp-assignment-form) .button { white-space: normal; text-align: center; max-width: 100%; }
+body .auth-container .brand-panel h1 { white-space: normal; overflow-wrap: anywhere; font-size: clamp(1.5rem, 9cqw, 3.125rem); line-height: 1.15; }
+body .auth-container .brand-panel h1 span { display: inline-block; max-width: 100%; }
+body .th-hero, body .admin-home-hero { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+body .about-split > *, body .admin-home-hero > *, body .th-hero > * { min-width: 0; }
+body .scoreboard-page .scoreboard-leaderboard .scoreboard-table th { white-space: normal; }
+body .verify-footer { align-items: center; }
+body .verify-footer :is(a, .text-button) { display: inline-flex; align-items: center; min-height: 44px; padding: 8px; font-size: .8125rem; }
+body .verify-footer form { margin-left: 0; }
+body :is(.admin-home-secondary, .th-secondary, .form-link a, .download-help a) { display: inline-flex; align-items: center; min-height: 44px; padding-block: 8px; }
+body :is(.tp-link, .admin-delete-link, .scoreboard-refresh) { display: inline-flex; align-items: center; min-height: 44px; padding-block: 8px; }
+body.page-motion-ready .about-chapter:hover img { transform: none; }
+body .game-about-page .game-about-image { object-fit: contain; }
+@media (max-width: 760px) { body .admin-page .admin-grid > .admin-form-panel { grid-row: 1; } }
+@media (max-width: 960px) {
+    body .about-split, body .th-hero, body .admin-home-hero { grid-template-columns: minmax(0, 1fr); }
+    body .tp-shell :is(.tp-caption, .tp-footnote, .tp-stat small), body .admin-page .admin-description { font-size: .875rem; }
+    body .tp-shell :is(.tp-link, .admin-delete-link), body .scoreboard-refresh { display: inline-flex; align-items: center; min-height: 44px; padding-block: 8px; }
+    body .tp-table th { font-size: .75rem; letter-spacing: .02em; }
+    body .tp-table td { font-size: .875rem; }
+    body .scoreboard-page :is(.scoreboard-stat-label, .scoreboard-stat-note, .scoreboard-last-played, .scoreboard-footnote, .scoreboard-status) { font-size: .8125rem; }
+    body .scoreboard-page .scoreboard-table thead th { font-size: .75rem; }
+    body .download-page :is(.download-help, .download-details p) { font-size: .875rem; }
+}
+@media (max-width: 600px) {
+    body .workspace-navbar .workspace-brand > small { font-size: .75rem; letter-spacing: .03em; }
+    body .workspace-navbar .workspace-links > a, body .workspace-navbar .workspace-account-link { font-size: .875rem; }
+    body .workspace-navbar :is(.workspace-account-panel, .workspace-notification-panel, .navigation-panel) {
+        top: var(--workspace-panel-top, 144px); max-height: var(--workspace-panel-height, calc(100dvh - 160px));
+        padding-top: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    body .game-home :is(.game-feature h2, .game-feature p) { font-size: .8125rem; }
+    body .game-home .game-feature { align-items: flex-start; }
+    body .game-home .game-journey-improve > img { object-position: center 25%; }
+    body :is(.form-panel, .account-content, .admin-form-body) label { font-size: .875rem; line-height: 1.6; }
+    body :is(.verify-help, .verify-steps, .verify-content .alert, .field-error) { font-size: .875rem; }
+    body :is(.tp-form-grid, .admin-fields, .account-form) > * { min-width: 0; }
+    body .enrollment-confirm label { align-items: start; padding-block: 8px; }
+    body .activation-pagination { flex-wrap: wrap; }
+    body .verify-brand { overflow-wrap: anywhere; }
+}
+@media (max-width: 360px) {
+    body .game-home .game-features-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    body .game-home .game-feature { padding-inline: 0; gap: 14px; }
+    body .game-home .game-feature::before { display: none; }
+    body .game-home .game-feature-icon { width: 44px; }
+    body .game-home .game-feature p { font-size: .875rem; }
+    body .tp-stats { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) and (max-height: 480px) {
+    body .workspace-navbar :is(.workspace-account-panel, .workspace-notification-panel, .navigation-panel) { top: var(--workspace-panel-top, 8px); max-height: var(--workspace-panel-height, calc(100dvh - 16px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body :is(.workspace-navbar, .tp-shell, .account-page, .auth-container) *, body :is(.workspace-navbar, .tp-shell, .account-page, .auth-container) *::before, body :is(.workspace-navbar, .tp-shell, .account-page, .auth-container) *::after { scroll-behavior: auto; }
+}
+@media (forced-colors: active) { body :focus-visible { outline-color: Highlight; } }

@@ -2,7 +2,7 @@
 @section('title', 'Block Applications | ZeroRiskInitiative')
 @section('content')
 @include('teacher.partials.navbar')
-<main class="tp-shell">
+<main id="main-content" tabindex="-1" class="tp-shell">
     <header class="tp-heading"><div><span class="tp-eyebrow">YOUR CLASSROOMS</span><h1>Block Applications</h1><p>Review students who want to join your assigned blocks. Accepting adds them to the block and your class roster.</p></div></header>
     @include('partials.messages')
     @if ($unavailable)

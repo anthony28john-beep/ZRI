@@ -1,6 +1,7 @@
 @if ($loading ?? false)
     <summary class="workspace-notifications" aria-label="Open notifications" title="Notifications"><x-nav-icon name="bell" /></summary>
     <section class="workspace-notification-panel" aria-label="Notifications">
+        <x-panel-close />
         <div class="workspace-notification-heading"><h2>Notifications</h2></div>
         <p class="workspace-notification-caption" data-notification-status>Loading your updates…</p>
         <noscript><p class="workspace-notification-caption">Open {{ $role === 'teacher' ? 'Block Applications' : 'your scoreboard or account information' }} to view updates.</p></noscript>
@@ -14,6 +15,7 @@
                     @if ($pendingApplicationCount === null || $pendingApplicationCount > 0)<span class="workspace-notification-count" aria-hidden="true">{{ $pendingApplicationCount === null ? '!' : ($pendingApplicationCount > 99 ? '99+' : $pendingApplicationCount) }}</span>@endif
                 </summary>
                 <section class="workspace-notification-panel" aria-label="Block application notifications">
+                    <x-panel-close />
                     <div class="workspace-notification-heading"><h2>Notifications</h2><span>{{ $pendingApplicationCount === null ? 'Unavailable' : $pendingApplicationCount.' pending' }}</span></div>
                     @if ($pendingApplicationCount === null)
                         <p class="workspace-notification-empty">Notifications are temporarily unavailable. Open Block Applications to try again.</p>
@@ -37,6 +39,7 @@
                     @if (($studentNotifications['count'] ?? 0) > 0)<span class="workspace-notification-count" aria-hidden="true">{{ $studentNotifications['count'] > 99 ? '99+' : $studentNotifications['count'] }}</span>@elseif (!empty($studentNotifications['unavailable']))<span class="workspace-notification-count" aria-hidden="true">!</span>@endif
                 </summary>
                 <section class="workspace-notification-panel" aria-label="Your block and level notifications">
+                    <x-panel-close />
                     <div class="workspace-notification-heading"><h2>Notifications</h2><span>{{ $studentNotifications['count'] ?? 0 }} updates</span></div>
                     @foreach ($studentNotifications['unavailable'] ?? [] as $message)<p class="workspace-notification-caption">{{ $message }} Refresh this page to try again.</p>@endforeach
                     @if (!empty($studentNotifications['items']))

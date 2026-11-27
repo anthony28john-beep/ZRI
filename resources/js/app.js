@@ -28,18 +28,40 @@ const navigationDropdowns = document.querySelectorAll('[data-navigation-dropdown
 const positionMobilePanels = () => {
     const navbar = document.querySelector('.workspace-navbar');
     if (!navbar) return;
-    const top = Math.max(12, navbar.getBoundingClientRect().bottom + 8);
+    const viewport = window.visualViewport;
+    const height = viewport?.height || window.innerHeight;
+    const offset = viewport?.offsetTop || 0;
+    // On short screens or with the keyboard open, use the available viewport instead of covering it.
+    const preferredTop = navbar.getBoundingClientRect().bottom + 8;
+    const top = offset + (height < 480 ? 8 : Math.max(8, Math.min(preferredTop - offset, height - 180)));
     navbar.style.setProperty('--workspace-panel-top', `${Math.round(top)}px`);
+    navbar.style.setProperty('--workspace-panel-height', `${Math.max(80, Math.floor(height - (top - offset) - 12))}px`);
 };
 positionMobilePanels();
 window.addEventListener('resize', positionMobilePanels);
+window.addEventListener('scroll', () => {
+    if (document.querySelector('[data-navigation-dropdown][open]')) positionMobilePanels();
+}, { passive: true });
+window.visualViewport?.addEventListener('resize', positionMobilePanels);
+window.visualViewport?.addEventListener('scroll', positionMobilePanels);
+if ('ResizeObserver' in window) {
+    const navbar = document.querySelector('.workspace-navbar');
+    if (navbar) new ResizeObserver(positionMobilePanels).observe(navbar);
+}
 const updateTableScrolling = () => {
     document.querySelectorAll('.tp-table-wrap, .scoreboard-table-scroll').forEach(region => {
         const overflow = region.scrollWidth > region.clientWidth + 1;
         region.dataset.scrollable = String(overflow);
-        if (!overflow || region.hasAttribute('tabindex')) return;
-        region.tabIndex = 0;
-        region.setAttribute('role', 'region');
+        if (!overflow && region.dataset.autoTabstop === 'true') {
+            region.removeAttribute('tabindex');
+            delete region.dataset.autoTabstop;
+        }
+        if (!overflow) return;
+        if (!region.hasAttribute('tabindex')) {
+            region.tabIndex = 0;
+            region.dataset.autoTabstop = 'true';
+        }
+        if (!region.hasAttribute('role')) region.setAttribute('role', 'region');
         if (!region.hasAttribute('aria-label')) {
             const heading = region.closest('section')?.querySelector('h2, h3');
             region.setAttribute('aria-label', `${heading?.textContent.trim() || 'Data table'} — scroll horizontally for more columns`);
@@ -49,7 +71,14 @@ const updateTableScrolling = () => {
 updateTableScrolling();
 window.addEventListener('load', updateTableScrolling);
 window.addEventListener('resize', updateTableScrolling);
+document.addEventListener('toggle', updateTableScrolling, true);
 document.addEventListener('click', event => {
+    const close = event.target.closest('[data-navigation-close]');
+    if (close) {
+        const dropdown = close.closest('[data-navigation-dropdown]');
+        if (dropdown) { dropdown.open = false; dropdown.querySelector('summary')?.focus(); }
+        return;
+    }
     navigationDropdowns.forEach(dropdown => {
         if (dropdown.open && !dropdown.contains(event.target)) dropdown.open = false;
     });

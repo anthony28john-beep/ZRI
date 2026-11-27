@@ -6,7 +6,7 @@
 <div class="student-dashboard download-page">
     @include('student.partials.navbar')
 
-    <main class="student-content" aria-label="Download Game">
+    <main id="main-content" tabindex="-1" class="student-content" aria-label="Download Game">
         <header class="download-heading">
             <span class="brand-badge">YOUR NEXT MISSION</span>
             <h1>Download the game</h1>
